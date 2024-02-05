@@ -23,10 +23,25 @@ console.log(`Did you know those add up to ${sum}?`);
 
 */
 
-// /*
-// 5:
-const randomNum = Math.random(6);
-// const scaledRandNum = Map(randomNum, 0, 1, 0, 6);
-
+/*
+* 5:
+* I'm familiar with map() in p5.js, so I asked gpt for an equivalent.
+* It recommended a custom function similar to the one on this page: https://stackoverflow.com/questions/14224535/scaling-between-two-number-ranges 
+* I ultimately referred to https://www.w3schools.com/jsref/jsref_random.asp
+*/
+/*
+const randomNum = Math.round(Math.random() * 6);
 console.log(randomNum);
-// */
+*/
+
+/*
+6:
+*/
+// pick a random number
+const choiceFactor = Math.random();
+// if it's above 1/2, make it show last name else show first name
+if (choiceFactor > 0.5){
+    console.log("Lee")
+} else {
+    console.log("Shayla")
+}
