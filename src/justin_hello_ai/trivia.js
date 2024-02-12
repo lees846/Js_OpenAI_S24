@@ -4,7 +4,7 @@
  * Uses GPT to evaluate the answers.
  */
 import { ask, say } from "../shared/cli.js";
-import { gptPrompt } from "../shared/openai.js";
+import { gptPrompt } from "../shared/ai.js";
 
 main();
 

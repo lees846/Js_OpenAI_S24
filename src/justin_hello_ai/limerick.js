@@ -3,7 +3,7 @@
  * and then uses GPT-3 language model to generate a limerick about the user.
  */
 
-import { gptPrompt } from "../shared/openai.js";
+import { gptPrompt } from "../shared/ai.js";
 import { ask, say } from "../shared/cli.js";
 
 main();

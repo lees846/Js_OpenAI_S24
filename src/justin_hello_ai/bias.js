@@ -10,7 +10,7 @@
  * It is also useful to show that the formating of responses can vary.
  */
 
-import { gptPrompt } from "../shared/openai.js";
+import { gptPrompt } from "../shared/ai.js";
 import { ask, say } from "../shared/cli.js";
 
 main();

@@ -8,7 +8,7 @@
  */
 
 import { say } from "../shared/cli.js";
-import { gptPrompt } from "../shared/openai.js";
+import { gptPrompt } from "../shared/ai.js";
 
 async function main() {
   const fox = { hp: 10, attack: 12, defense: 6 };
