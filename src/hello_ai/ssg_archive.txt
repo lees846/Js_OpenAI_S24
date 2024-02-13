@@ -1,0 +1,207 @@
+(base) shaylalee@Shaylas-MacBook-Pro Js_OpenAI_S24 % deno run -A src/hello_ai/sillysentencegame.js
+Let's play the silly sentence game!
+We will take turns adding a word to the end of a sentence until one of us 
+    ends it with a '.', '!' or '?'. What should the first word be?
+ Next
+✔ 4.0-turbo 94/2t 0.54s $0.001 $0.001
+Add the next word:
+Next year  I
+✔ 4.0-turbo 96/3t 0.59s $0.001 $0.002
+Add the next word:
+Next year I  plan
+✔ 4.0-turbo 97/5t 0.72s $0.001 $0.003
+Add the next word:
+Next year I plan to  go
+✔ 4.0-turbo 99/6t 0.59s $0.001 $0.004
+Add the next word:
+Next year I plan to go  to
+✔ 4.0-turbo 99/8t 0.87s $0.001 $0.006
+Add the next word:
+Next year I plan to go to Japan  to
+✔ 4.0-turbo 103/10t 3.63s $0.001 $0.007
+Add the next word:
+Next year I plan to go to Japan to explore  the
+✔ 4.0-turbo 104/11t 1.19s $0.001 $0.008
+Add the next word:
+Next year I plan to go to Japan to explore the  best
+✔ 4.0-turbo 105/13t 1.14s $0.001 $0.010
+Add the next word:
+Next year I plan to go to Japan to explore the best curry  of
+✔ 4.0-turbo 107/15t 0.71s $0.002 $0.011
+Add the next word:
+Next year I plan to go to Japan to explore the best curryof restaurants  everywhere
+✔ 4.0-turbo 111/18t 1.69s $0.002 $0.013
+Add the next word:
+Next year I plan to go to Japan to explore the best curry restaurantseverywhere and  be
+✔ 4.0-turbo 112/19t 1.70s $0.002 $0.015
+Add the next word:
+Next year I plan to go to Japan to explore the best curry restaurants everywhere and be amazed.  .
+Our final sentence is:
+Next year I plan to go to Japan to explore the best curry restaurants everywhere
+and be amazed..
+
+(base) shaylalee@Shaylas-MacBook-Pro Js_OpenAI_S24 % deno run -A src/hello_ai/sillysentencegame.js
+Let's play the silly sentence game!
+We will take turns adding a word to the end of a sentence until one of us 
+    ends it with a '.', '!' or '?'. What should the first word be?
+ .
+✔ 4.0-turbo 100/1t 0.70s $0.001 $0.001
+Add the next word:
+Once  .
+/n Our final silly sentence is:
+***
+"Once."
+***
+
+(base) shaylalee@Shaylas-MacBook-Pro Js_OpenAI_S24 % deno run -A src/hello_ai/sillysentencegame.js
+
+Let's play the silly sentence game!
+We will take turns adding a word to the end of a sentence until one of us 
+    ends it with a '.', '!' or '?'. What should the first word be?
+ Begin
+✔ 4.0-turbo 102/2t 0.62s $0.001 $0.001
+Add the next word:
+Begin your  journey
+✔ 4.0-turbo 105/4t 0.90s $0.001 $0.002
+Add the next word:
+Begin your journey with  some
+✔ 4.0-turbo 106/8t 0.85s $0.001 $0.004
+Add the next word:
+Begin your journey withsome trepidation  and
+✔ 4.0-turbo 110/10t 1.50s $0.001 $0.005
+Add the next word:
+Begin your journey with some trepidation and excitement  but
+✔ 4.0-turbo 112/12t 1.54s $0.001 $0.006
+Add the next word:
+Begin your journey with some trepidation and excitement but also  with
+✔ 4.0-turbo 115/14t 1.88s $0.002 $0.008
+Add the next word:
+Begin your journey with some trepidation and excitement but also with mindfulness  and 
+✔ 4.0-turbo 116/15t 0.81s $0.002 $0.010
+Add the next word:
+Begin your journey with some trepidation and excitement but also with mindfulness and  good
+✔ 4.0-turbo 117/16t 1.38s $0.002 $0.011
+Add the next word:
+Begin your journey with some trepidation and excitement but also with mindfulness and good  friends
+✔ 4.0-turbo 118/18t 0.84s $0.002 $0.013
+Add the next word:
+Begin your journey with some trepidation and excitement but also with mindfulness and goodfriends who  .
+/n Our final silly sentence is:
+***
+"Begin your journey with some trepidation and excitement but also with
+mindfulness and goodfriends who."
+***
+
+(base) shaylalee@Shaylas-MacBook-Pro Js_OpenAI_S24 % deno run -A src/hello_ai/sillysentencegame.js
+
+Let's play the silly sentence game!
+We will take turns adding a word to the end of a sentence until one of us 
+    ends it with a '.', '!' or '?'. What should the first word be?
+ When
+✔ 4.0-turbo 106/2t 0.70s $0.001 $0.001
+Add the next word:
+When the  world
+✔ 4.0-turbo 108/4t 0.48s $0.001 $0.002
+Add the next word:
+When the world seems  sad,
+✔ 4.0-turbo 110/1t 0.44s $0.001 $0.003
+Add the next word:
+and  .
+/n Our final silly sentence is:
+***
+"and ."
+***
+
+(base) shaylalee@Shaylas-MacBook-Pro Js_OpenAI_S24 % deno run -A src/hello_ai/sillysentencegame.js
+
+Let's play the silly sentence game!
+We will take turns adding a word to the end of a sentence until one of us 
+    ends it with a '.', '!' or '?'. What should the first word be?
+ When
+✔ 4.0-turbo 106/1t 0.92s $0.001 $0.001
+Add the next word:
+the  world
+✔ 4.0-turbo 107/3t 0.49s $0.001 $0.002
+Add the next word:
+the world is  getting
+✔ 4.0-turbo 109/5t 0.55s $0.001 $0.003
+Add the next word:
+the world is getting increasingly  worse
+✔ 4.0-turbo 111/1t 0.48s $0.001 $0.005
+Add the next word:
+due  .
+/n Our final silly sentence is:
+***
+"due ."
+***
+
+(base) shaylalee@Shaylas-MacBook-Pro Js_OpenAI_S24 % deno run -A src/hello_ai/sillysentencegame.js
+
+Let's play the silly sentence game!
+We will take turns adding a word to the end of a sentence until one of us 
+    ends it with a '.', '!' or '?'. What should the first word be?
+ What
+✔ 4.0-turbo 149/2t 0.61s $0.002 $0.002
+Add the next word:
+What if  we
+✔ 4.0-turbo 151/4t 1.65s $0.002 $0.003
+Add the next word:
+What if we could  find
+✔ 4.0-turbo 153/6t 1.24s $0.002 $0.005
+Add the next word:
+What if we could find a  new
+✔ 4.0-turbo 155/8t 0.63s $0.002 $0.007
+Add the next word:
+What if we could find a new planet  to
+✔ 4.0-turbo 157/11t 2.50s $0.002 $0.009
+Add the next word:
+What if we could find a new planet to colonize  ?
+/n Our final silly sentence is:
+***
+"What if we could find a new planet to colonize ?"
+***
+
+(base) shaylalee@Shaylas-MacBook-Pro Js_OpenAI_S24 % deno run -A src/hello_ai/sillysentencegame.js
+
+Let's play the silly sentence game!
+We will take turns adding a word to the end of a sentence until one of us 
+    ends it with a '.', '!' or '?'. What should the first word be?
+ I
+✔ 4.0-turbo 149/2t 0.58s $0.002 $0.002
+Add the next word:
+I wandered  through
+✔ 4.0-turbo 151/4t 0.48s $0.002 $0.003
+Add the next word:
+I wandered through ancient  ruins
+✔ 4.0-turbo 153/6t 0.76s $0.002 $0.005
+Add the next word:
+I wandered through ancient ruins and  accidentally
+✔ 4.0-turbo 155/8t 1.28s $0.002 $0.007
+Add the next word:
+I wandered through ancient ruins and accidentally stumbled  upon
+✔ 4.0-turbo 157/10t 0.60s $0.002 $0.009
+Add the next word:
+I wandered through ancient ruins and accidentally stumbled upon a  broken
+✔ 4.0-turbo 159/12t 0.62s $0.002 $0.011
+Add the next word:
+I wandered through ancient ruins and accidentally stumbled upon a broken artifact  painte
+✔ 4.0-turbo 162/13t 1.20s $0.002 $0.013
+Add the next word:
+I wandered through ancient ruins and accidentally stumbled upon a broken artifact painted  with
+✔ 4.0-turbo 162/15t 0.85s $0.002 $0.015
+Add the next word:
+I wandered through ancient ruins and accidentally stumbled upon a broken artifact painted with mysterious  runes.
+
+Our final silly sentence is:
+
+*
+*
+*
+"I wandered through ancient ruins and accidentally stumbled upon a broken
+artifact painted with mysterious runes."
+*
+*
+*
+
+Thanks for playing!
+(base) shaylalee@Shaylas-MacBook-Pro Js_OpenAI_S24 % 
