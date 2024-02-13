@@ -7,6 +7,8 @@
  * If the user "plays along" the experience is suprisingly similar to a true
  * text adventure game. But the user can easily "break" the game by issuing
  * outlandish commands.
+ *
+ * Modified by Shayla Lee 02/16/2024
  */
 
 import { gptPrompt } from "../shared/ai.js";
@@ -19,7 +21,7 @@ async function main() {
 
   const context = [];
   let playing = true;
-  const location = "woods";
+  const location = "ocean";
   const player = {};
   player.name = await ask("What is your name?");
   player.class = await ask("What is your class?");
@@ -50,7 +52,7 @@ async function main() {
 
     const response = await gptPrompt(prompt, {
       max_tokens: 128,
-      temperature: 0.5,
+      temperature: 0.7,
     });
     context.push(response);
     say(`\n${response}\n`);

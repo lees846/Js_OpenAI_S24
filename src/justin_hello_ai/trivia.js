@@ -2,6 +2,8 @@
  * triva.js
  * Uses GPT to generate trivia questions based on a user-provided topic.
  * Uses GPT to evaluate the answers.
+ *
+ * Modified by Shayla Lee 02/16/2024
  */
 import { ask, say } from "../shared/cli.js";
 import { gptPrompt } from "../shared/ai.js";
@@ -22,9 +24,10 @@ async function main() {
 
     Include only the array, start with [ and end with ].
     `,
-    { max_tokens: 1024, temperature: 0.3 },
+    { max_tokens: 1024, temperature: 0.1 },
   );
 
+  let score = 0;
   let questions = [];
   try {
     questions = JSON.parse(questionsString);
@@ -45,10 +48,20 @@ async function main() {
     Was the answer correct?
     Be an easy grader. Accept answers that are close enough. Allow misspellings.
     Answer yes or no. If no, provide the correct answer.
+    IMPORTANT: Every answer should start with the letter y or n to indicate whether the question is right or not.
+    I will use this to check if I should add a point to their score.
+    Examples: "y Yes, that is correct." "n No, the correct answer is fish."
     `,
       { max_tokens: 64, temperature: 0.1 },
     );
-    say(response);
+    // clip First letter from response and if y, increment score
+    if (response[0] === "y") {
+      score++;
+    }
+
+    const answer = response.slice(2); // Used GPT to remember the slice method
+    say(answer);
     say("");
   }
+  say(`You got ${score} out of ${questions.length} correct!`);
 }
