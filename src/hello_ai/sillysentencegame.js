@@ -16,9 +16,37 @@ import { gptPrompt } from "../shared/ai.js";
 main();
 
 async function main() {
-  say("Let's play the silly sentence game!");
-  say(
-    "We will take turns adding a word to the end of a sentence until someone ends it with a '.', '!' or '?'.",
-  );
+  say("\nLet's play the silly sentence game!");
+
   let sentence = "";
+  const first_word = ask(
+    `We will take turns adding a word to the end of a sentence until one of us 
+    ends it with a '.', '!' or '?'. What should the first word be?\n`,
+  );
+  sentence = first_word;
+
+  const promptTemplate =
+    `We are taking turns adding a word to the end of a sentence until one of us ends it 
+    with a '.', '!' or '?'. Only add one word or ending punctuation, and always send the existing 
+    portion of the sentence with your new word at the end. Use a variety of adjectives, verbs, and nouns.
+    Example: the current sentence is 'Hello my', you pick 'name', send only 'Hello my name'.`;
+
+  let next_word = "";
+
+  while (
+    next_word != "!" &&
+    next_word != "." &&
+    next_word != "?"
+  ) {
+    sentence = await gptPrompt(
+      `${promptTemplate} The current sentence is: '${sentence}'`,
+      { max_tokens: 50, temperature: 0.7 },
+    );
+
+    say(`Add the next word:`);
+    next_word = ask(`${sentence} `);
+    sentence += ` ${next_word}`;
+  }
+
+  say(`/n Our final silly sentence is: \n***\n"${sentence}"\n***\n`);
 }
