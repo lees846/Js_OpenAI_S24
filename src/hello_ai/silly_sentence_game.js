@@ -16,7 +16,7 @@ import { gptPrompt } from "../shared/ai.js";
 main();
 
 async function main() {
-  let sentence = "";
+  let working_sentence = "";
   let next_word = "";
   const promptTemplate =
     `We are taking turns adding a word to the end of a sentence until one of us ends it 
@@ -41,19 +41,20 @@ async function main() {
     first_word = ask(
       `Great! What's the first word?`,
     );
-    sentence = first_word;
+    working_sentence = first_word;
   } else {
+    // ! I cannot make the AI pick different words each time even with different temps >:(
     first_word = await gptPrompt(
-      `${promptTemplate} In this case, choose the first word for the sentence. Always send only one word. NEVER send more than one word.
-      Correct Examples: "Good" "When" "Eventually" "Sun"
-      Wrong Examples: "Every day" "Sometime I" "For some"`,
-      { max_tokens: 3, temperature: 1.2 },
+      `Let's create a sentence together by taking turns adding a word to the end. 
+      Choose the first word for the sentence. Send only one word. NEVER send more than one word.
+      Start with a character name, an interesting object, a time word, or an adverb.`,
+      { max_tokens: 20, temperature: Math.random() },
     );
-    sentence = first_word;
-    say(`Let's start with ${sentence}!`);
+    working_sentence = first_word;
+    say(`Let's start with ${working_sentence}!`);
     say(`Add the next word:`);
-    next_word = ask(`${sentence} `);
-    sentence += ` ${next_word}`;
+    next_word = ask(`${working_sentence} `);
+    working_sentence += ` ${next_word}`;
   }
 
   // Referencing https://www.w3schools.com/js/js_string_search.asp#mark_includes for more flexible checking
@@ -61,23 +62,36 @@ async function main() {
     !next_word.includes("!") &&
     !next_word.includes(".") &&
     !next_word.includes("?") &&
-    !sentence.includes("!") &&
-    !sentence.includes(".") &&
-    !sentence.includes("?")
+    !working_sentence.includes("!") &&
+    !working_sentence.includes(".") &&
+    !working_sentence.includes("?")
   ) {
-    sentence = await gptPrompt(
-      `${promptTemplate} The current sentence is: '${sentence}'`,
-      { max_tokens: 90, temperature: 1.2 },
+    working_sentence = await gptPrompt(
+      `${promptTemplate} The current sentence is: '${working_sentence}'`,
+      { max_tokens: 90, temperature: Math.random() },
     );
 
     say(`Add the next word:`);
-    next_word = ask(`${sentence} `);
-    sentence += ` ${next_word}`;
+    next_word = ask(`${working_sentence} `);
+    working_sentence += ` ${next_word}`;
+  }
+
+  let final_sentence;
+  // If working_sentence has a space before the last chtr, remove it
+  // Referring to https://www.w3schools.com/jsref/jsref_replace.asp
+  if (working_sentence.endsWith(" .")) {
+    final_sentence = working_sentence.replace(" .", ".");
+  } else if (working_sentence.endsWith(" !")) {
+    final_sentence = working_sentence.replace(" !", "!");
+  } else if (working_sentence.endsWith(" ?")) {
+    final_sentence = working_sentence.replace(" ?", "?");
+  } else {
+    final_sentence = working_sentence;
   }
 
   say(
     `\nOur final silly sentence is: 
-    \n*\n\n"${sentence}"\n\n*\n
+    \n*\n\n"${final_sentence}"\n\n*\n
     Thanks for playing!`,
   );
 }
