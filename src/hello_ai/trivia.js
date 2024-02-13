@@ -4,6 +4,7 @@
  * Uses GPT to evaluate the answers.
  *
  * Modified by Shayla Lee 02/16/2024
+ * > I added logic to make the model indicate y/n to keep track of player score
  */
 import { ask, say } from "../shared/cli.js";
 import { gptPrompt } from "../shared/ai.js";
@@ -13,7 +14,7 @@ main();
 async function main() {
   say("Hello, Player!");
 
-  const topic = await ask("What do you want to be quized on?");
+  const topic = await ask("What do you want to be quizzed on?");
 
   const questionsString = await gptPrompt(
     `
@@ -24,7 +25,7 @@ async function main() {
 
     Include only the array, start with [ and end with ].
     `,
-    { max_tokens: 1024, temperature: 0.1 },
+    { max_tokens: 1024, temperature: 0.5 },
   );
 
   let score = 0;
