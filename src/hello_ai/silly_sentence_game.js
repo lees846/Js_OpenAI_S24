@@ -37,7 +37,7 @@ async function main() {
 
   let first_word;
 
-  if (who_starts === "me" || who_starts === "Me" || who_starts === "ME") {
+  if (who_starts.toLowerCase() === "me") {
     first_word = ask(
       `Great! What's the first word?`,
     );
@@ -48,7 +48,7 @@ async function main() {
       `Let's create a sentence together by taking turns adding a word to the end. 
       Choose the first word for the sentence. Send only one word. NEVER send more than one word.
       Start with a character name, an interesting object, a time word, or an adverb.`,
-      { max_tokens: 20, temperature: Math.random() },
+      { max_tokens: 20, temperature: 0.5 },
     );
     working_sentence = first_word;
     say(`Let's start with ${working_sentence}!`);
