@@ -3,6 +3,9 @@
  * the user and the GPT API through the terminal.
  *
  * Shayla Lee Feb 25, 2024 - Mar, 2024
+ *
+ * Learned about the Fisher-Yates Shuffle algorithm https://bost.ocks.org/mike/shuffle/
+ * to randomize the deck of cards
  */
 
 import { gptPrompt } from "../shared/ai.js";
@@ -62,7 +65,7 @@ const deck_of_cards = [
   "A",
   "A",
 ];
-const discard_pile = [];
+const draw_pile = [];
 const user_hand = [];
 const gpt_hand = []; // will never be shown to the user until the end of the game
 let users_turn = true;
@@ -71,7 +74,7 @@ let playing = false;
 main();
 
 async function main() {
-  shuffleDeck();
+  shuffleDeck(deck_of_cards);
   say("Let's play Go Fish!");
   // const rulesKnown = await ask("Do you know the rules?");
 
@@ -95,18 +98,47 @@ async function main() {
   }
 }
 
-function shuffleDeck() {
-  return;
+function shuffleDeck(deck) {
+  // Implementation based on https://bost.ocks.org/mike/shuffle/
+  let remaining_elements = deck.length;
+  let card_to_move;
+
+  // While there are still cards in the deck
+  while (remaining_elements > 0) {
+    // Select a card from the cards that are there
+    card_to_move = Math.floor(Math.random() * remaining_elements--);
+
+    // Add it to the shuffled draw pile
+    draw_pile.push(deck.splice(card_to_move, 1)[0]);
+  }
+  console.log(draw_pile);
+  return draw_pile;
 }
 
 function dealCards() {
+  playing = true;
+  for (let i = 0; i < 7; i++) {
+    // Deal a card to the user
+    user_hand.push(draw_pile[draw_pile.length - 1]);
+    draw_pile.pop(draw_pile[draw_pile.length - 1]);
+
+    // Deal a card to GPT
+    gpt_hand.push(draw_pile[draw_pile.length - 1]);
+    draw_pile.pop(draw_pile[draw_pile.length - 1]);
+  }
+  // console.log(`Draw pile: ${draw_pile.length}`);
+  // console.log(`GPT hand: ${gpt_hand.length} cards, ${gpt_hand}`);
+  // console.log(`User hand: ${user_hand.length} cards, ${user_hand}`);
+
   return;
 }
 
 function showCurrentHands() {
-  say(`Your opponent has x cards`);
-  say(`There are x cards in the discard pile`);
-  say(`Your cards are: [array of cards]`);
+  say(`.\n`);
+  say(`There are ${draw_pile.length} cards in the draw pile`);
+  say(`Your opponent has ${gpt_hand.length} cards`);
+  say(`Your cards are: ${user_hand}`);
+  say(`\n.`);
 }
 
 function doYouHaveAny(card_num) {
