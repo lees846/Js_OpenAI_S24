@@ -77,6 +77,32 @@ class Player {
     this.hand = hand;
     this.books = books; // a book is a set of 4 cards, all the same number
   }
+
+  askForCard(opponent, card_id) {
+    // Check who's asking
+    // TODO: check if user has the card they asked for (later)
+    // Check opponent's hand for target_number
+    if (opponent.hand.indexOf(card_id) != -1) {
+      const target_indices = [];
+      for (let i = 0; i < opponent.hand.length; i++) {
+        // Add each matching card to this.hand
+        if (opponent.hand[i] === card_id) {
+          this.hand.push(opponent.hand[i]);
+          target_indices.push(i);
+        }
+      }
+      say(`Yes, I have ${target_indices.length} ${card_id}'s`);
+
+      // Remove them from opponent.hand
+      for (let i = 0; i < target_indices.length; i++) {
+        opponent.hand.splice(i, 1);
+      }
+    } else {
+      say(`Nope, I don't have any ${card_id}'s!`);
+      say("Go Fish!");
+      goFish();
+    }
+  }
 }
 
 const user = new Player(true, true, [], []); // User will always go first for now
@@ -101,12 +127,16 @@ async function main() {
     showCurrentHands();
     ask(`It's ${user.isMyTurn} that it's your turn. Quit?`);
     if (user.isMyTurn) {
-      usersTurn();
+      target_card = ask(
+        "Which card would you like to ask for? Only respond with the letter or number: ",
+      );
+      user.askForCard(AI_player, target_card);
     } else {
       console.log(
         "I would now send a prompt to GPT asking what card it wants to ask for",
       );
-      // gptsTurn();
+      // TODO: ask gpt to define target card
+      // AI_player.askForCard(user, target_card)
     }
     // TODO: check for books/matches/points
     checkGameOver();
@@ -159,20 +189,6 @@ function showCurrentHands() {
   say(`Your opponent has ${AI_player.hand.length} cards`);
   say(`Your cards are: ${user.hand}`);
   say(`\n.`);
-}
-
-function usersTurn() {
-  target_card = ask(
-    "Which card would you like to ask for? Only respond with the letter or number: ",
-  );
-  doYouHaveAny(target_card);
-}
-
-async function gptsTurn() {
-  target_card = await gptPrompt(
-    `We're playing Go Fish, here's your hand, here's the history, which card do you want to play?`,
-  );
-  doYouHaveAny(target_card);
 }
 
 function doYouHaveAny(card_id) {
