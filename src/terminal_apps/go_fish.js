@@ -95,13 +95,45 @@ class Player {
 
       // Remove them from opponent.hand
       for (let i = 0; i < target_indices.length; i++) {
-        opponent.hand.splice(i, 1);
+        // Save length of current hand
+        let saved_length = opponent.hand.length;
+        for (let j = 0; j < opponent.hand.length; j++) {
+          if (opponent.hand.length < saved_length) {
+            saved_length = opponent.hand.length;
+          } else if (opponent.hand[j] === card_id) {
+            opponent.hand.splice(j, 1);
+          }
+        }
       }
     } else {
       say(`Nope, I don't have any ${card_id}'s!`);
       say("Go Fish!");
-      goFish();
+      this.goFish(opponent);
     }
+    return this.hand, opponent.hand;
+  }
+
+  goFish(opponent) {
+    // Pick a card from "top of pile", add to hand, and take from deck
+    this.hand.push(draw_pile[draw_pile.length - 1]);
+    draw_pile.pop(draw_pile[draw_pile.length - 1]);
+    say(`You picked up a ${this.hand[this.hand.length - 1]}!`);
+
+    if (this.hand[this.hand.length - 1] === target_card) {
+      say(`It's just what you were looking for~ \n Go again!`);
+      say(`Your cards are: ${this.hand}`);
+      // TODO: Make player/gpt specific - function?
+      target_card = ask("Which card would you like to ask for?");
+      this.askForCard(opponent, target_card);
+    } else {
+      this.isMyTurn = false;
+      return this.hand, opponent.hand;
+    }
+  }
+
+  checkBooks() {
+    // look for matches of 4 in this.hand
+    // if a number appears 4 times,
   }
 }
 
@@ -111,6 +143,32 @@ const AI_player = new Player(false, false, [], []);
 main();
 
 async function main() {
+  startGame();
+
+  while (playing) {
+    showCurrentHands();
+    ask(`It's ${user.isMyTurn} that it's your turn. Quit?`); //just a check/chance to exit for debugging
+
+    if (user.isMyTurn) {
+      getTargetCard(user);
+      user.askForCard(AI_player, target_card);
+    } else {
+      console.log(
+        "I would now send a prompt to GPT asking what card it wants to ask for",
+      );
+      getTargetCard(AI_player);
+      // TODO:
+      // AI_player.askForCard(user, target_card)
+      // TODO: make sure to narrate.
+    }
+    // user.checkBooks();
+    // AI_player.checkBooks();
+    // TODO: check for books/matches/points
+    checkGameOver();
+  }
+}
+
+function startGame() {
   // looks like shuffling 3 times helps randomize better from a perfect deck
   shuffleDeck(deck_of_cards, draw_pile);
   shuffleDeck(draw_pile, deck_of_cards);
@@ -121,27 +179,6 @@ async function main() {
 
   say("I'll deal the cards...");
   dealCards();
-
-  // Game has started, this is where to make a "while playing"...
-  while (playing) {
-    showCurrentHands();
-    ask(`It's ${user.isMyTurn} that it's your turn. Quit?`);
-    if (user.isMyTurn) {
-      target_card = ask(
-        "Which card would you like to ask for? Only respond with the letter or number: ",
-      );
-      user.askForCard(AI_player, target_card);
-    } else {
-      console.log(
-        "I would now send a prompt to GPT asking what card it wants to ask for",
-      );
-      // TODO: ask gpt to define target card
-      // AI_player.askForCard(user, target_card)
-    }
-    // TODO: check for books/matches/points
-    checkGameOver();
-    ask(`It's ${user.isMyTurn} that it's your turn. Quit?`);
-  }
 }
 
 // TODO: Currently making both hands fairly similar 02/27/24
@@ -165,6 +202,7 @@ function shuffleDeck(deck, newDeck) {
 
 function dealCards() {
   playing = true;
+  // TODO: Can I do for each Player, deal 7 cards?
   for (let i = 0; i < 7; i++) {
     // Deal a card to the user
     user.hand.push(draw_pile[draw_pile.length - 1]);
@@ -174,11 +212,6 @@ function dealCards() {
     AI_player.hand.push(draw_pile[draw_pile.length - 1]);
     draw_pile.pop(draw_pile[draw_pile.length - 1]);
   }
-  // console.log(`Draw pile: ${draw_pile.length}`);
-  console.log(
-    `Pssst... GPT hand: ${AI_player.hand.length} cards, ${AI_player.hand}`,
-  );
-  // console.log(`User hand: ${user.hand.length} cards, ${user.hand}`);
 
   return;
 }
@@ -187,6 +220,7 @@ function showCurrentHands() {
   say(`.\n`);
   say(`There are ${draw_pile.length} cards in the draw pile`);
   say(`Your opponent has ${AI_player.hand.length} cards`);
+  say(`PSSST... They're ${AI_player.hand}`);
   say(`Your cards are: ${user.hand}`);
   say(`\n.`);
 }
@@ -224,28 +258,50 @@ function doYouHaveAny(card_id) {
   return;
 }
 
-function goFish() {
-  // Pick a card from "top of pile"
-  if (user.isMyTurn) {
-    // Add card to user hand and take from deck
-    user.hand.push(draw_pile[draw_pile.length - 1]);
-    draw_pile.pop(draw_pile[draw_pile.length - 1]);
-    say(`You picked up a ${user.hand[user.hand.length - 1]}!`);
-    if (user.hand[user.hand.length - 1] === target_card) {
-      say(`It's just what you were looking for~ \n Go again!`);
-      say(`Your cards are: ${user.hand}`);
-      target_card = ask("Which card would you like to ask for?");
-      doYouHaveAny(target_card);
-    } else {
-      user.isMyTurn = false;
-      return;
-    }
+// function goFish() {
+//   // Pick a card from "top of pile"
+//   if (user.isMyTurn) {
+//     // Add card to user hand and take from deck
+//     user.hand.push(draw_pile[draw_pile.length - 1]);
+//     draw_pile.pop(draw_pile[draw_pile.length - 1]);
+//     say(`You picked up a ${user.hand[user.hand.length - 1]}!`);
+//     if (user.hand[user.hand.length - 1] === target_card) {
+//       say(`It's just what you were looking for~ \n Go again!`);
+//       say(`Your cards are: ${user.hand}`);
+//       target_card = ask("Which card would you like to ask for?");
+//       doYouHaveAny(target_card);
+//     } else {
+//       user.isMyTurn = false;
+//       return;
+//     }
+//   } else {
+//     // GPT picks up a card
+//     AI_player.hand.push(draw_pile[draw_pile.length - 1]);
+//     draw_pile.pop(draw_pile[draw_pile.length - 1]);
+//   }
+//   return user.hand, AI_player.hand;
+// }
+
+async function getTargetCard(whosAsking) {
+  if (whosAsking.isUser) {
+    target_card = ask(
+      "Which card would you like to ask for? Only respond with the letter or number: ",
+    );
   } else {
-    // GPT picks up a card
-    AI_player.hand.push(draw_pile[draw_pile.length - 1]);
-    draw_pile.pop(draw_pile[draw_pile.length - 1]);
+    target_card = await gptPrompt(
+      `We are playing a game of Go Fish! You may ask me if I have any one of the cards in your hand, 
+      and the goal is to make sets ("books") of 4 matching cards, represented by numbers or letters. 
+      Your hand is ${whosAsking.hand}.
+      What card would you like to ask me for? Respond with ONLY ONE letter OR number that corresponds with a card in your hand. 10 is the only 2-digit exception.
+      Example 1: your hand = [J, J, K, 1, 4, 5], your output = J
+      Example 2: your hand = [A, 2, 2, 1, 6, Q], your output = 2
+      Example 3: your hand = [10, 10, 3, J, 10, K], your output = 10
+      I will read the string you return with javascript, so make sure it is only one number or letter.
+      `,
+    );
+    console.log(target_card);
+    user.isMyTurn = true;
   }
-  return user.hand, AI_player.hand;
 }
 
 function checkGameOver() {
