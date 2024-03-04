@@ -91,7 +91,9 @@ class Player {
           target_indices.push(i);
         }
       }
-      say(`Yes, I have ${target_indices.length} ${card_id}'s`);
+      ask(
+        `Yes, I have ${target_indices.length} ${card_id}'s\nPass cards over [hit enter]`,
+      );
 
       // Remove them from opponent.hand
       for (let i = 0; i < target_indices.length; i++) {
@@ -107,7 +109,7 @@ class Player {
       }
     } else {
       say(`Nope, I don't have any ${card_id}'s!`);
-      say("Go Fish!");
+      ask(">>Go Fish!");
       this.goFish(opponent);
     }
     return this.hand, opponent.hand;
@@ -117,10 +119,10 @@ class Player {
     // Pick a card from "top of pile", add to hand, and take from deck
     this.hand.push(draw_pile[draw_pile.length - 1]);
     draw_pile.pop(draw_pile[draw_pile.length - 1]);
-    say(`You picked up a ${this.hand[this.hand.length - 1]}!`);
+    ask(`It's a ${this.hand[this.hand.length - 1]}!\n[hit enter]`);
 
     if (this.hand[this.hand.length - 1] === target_card) {
-      say(`It's just what you were looking for~ \n Go again!`);
+      say(`It's just what ${opponent} was looking for~ \n Go again!`);
       say(`Your cards are: ${this.hand}`);
       // TODO: Make player/gpt specific - function?
       target_card = ask("Which card would you like to ask for?");
@@ -147,18 +149,16 @@ async function main() {
 
   while (playing) {
     showCurrentHands();
-    ask(`It's ${user.isMyTurn} that it's your turn. Quit?`); //just a check/chance to exit for debugging
 
     if (user.isMyTurn) {
       getTargetCard(user);
       user.askForCard(AI_player, target_card);
     } else {
-      console.log(
-        "I would now send a prompt to GPT asking what card it wants to ask for",
-      );
-      getTargetCard(AI_player);
-      // TODO:
-      // AI_player.askForCard(user, target_card)
+      say("Your opponent wants to know if you have any...");
+      await getTargetCard(AI_player);
+      AI_player.askForCard(user, target_card);
+      ask(`Your current cards: ${user.hand}\n[hit enter]`);
+      user.isMyTurn = true;
       // TODO: make sure to narrate.
     }
     // user.checkBooks();
@@ -299,8 +299,7 @@ async function getTargetCard(whosAsking) {
       I will read the string you return with javascript, so make sure it is only one number or letter.
       `,
     );
-    console.log(target_card);
-    user.isMyTurn = true;
+    say(`${target_card}'s?\n[hit enter]`);
   }
 }
 
