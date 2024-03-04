@@ -67,18 +67,29 @@ const deck_of_cards = [
   "A",
 ];
 const draw_pile = [];
-const user_hand = [];
-const users_books = []; // a book is a set of 4 cards, all the same number
-const gpt_hand = []; // will never be shown to the user until the end of the game
-const gpts_books = [];
-let isUsersTurn = true;
 let playing = false;
 let target_card;
+
+class Player {
+  constructor(isUser, isMyTurn, hand, books) {
+    this.isUser = isUser;
+    this.isMyTurn = isMyTurn;
+    this.hand = hand;
+    this.books = books; // a book is a set of 4 cards, all the same number
+  }
+}
+
+const user = new Player(true, true, [], []); // User will always go first for now
+const AI_player = new Player(false, false, [], []);
 
 main();
 
 async function main() {
-  shuffleDeck(deck_of_cards);
+  // looks like shuffling 3 times helps randomize better from a perfect deck
+  shuffleDeck(deck_of_cards, draw_pile);
+  shuffleDeck(draw_pile, deck_of_cards);
+  shuffleDeck(deck_of_cards, draw_pile);
+
   say("Let's play Go Fish!");
   // const rulesKnown = await ask("Do you know the rules?");
 
@@ -88,8 +99,8 @@ async function main() {
   // Game has started, this is where to make a "while playing"...
   while (playing) {
     showCurrentHands();
-    ask(`It's ${isUsersTurn} that it's your turn. Quit?`);
-    if (isUsersTurn) {
+    ask(`It's ${user.isMyTurn} that it's your turn. Quit?`);
+    if (user.isMyTurn) {
       usersTurn();
     } else {
       console.log(
@@ -99,12 +110,13 @@ async function main() {
     }
     // TODO: check for books/matches/points
     checkGameOver();
-    ask(`It's ${isUsersTurn} that it's your turn. Quit?`);
+    ask(`It's ${user.isMyTurn} that it's your turn. Quit?`);
   }
 }
 
 // TODO: Currently making both hands fairly similar 02/27/24
-function shuffleDeck(deck) {
+// 03/03/24: Call >1x for better shuffle
+function shuffleDeck(deck, newDeck) {
   // Implementation based on https://bost.ocks.org/mike/shuffle/
   let remaining_elements = deck.length;
   let card_to_move;
@@ -115,26 +127,28 @@ function shuffleDeck(deck) {
     card_to_move = Math.floor(Math.random() * remaining_elements--);
 
     // Add it to the shuffled draw pile
-    draw_pile.push(deck.splice(card_to_move, 1)[0]);
+    newDeck.push(deck.splice(card_to_move, 1)[0]);
   }
-  console.log(draw_pile);
-  return draw_pile;
+  console.log(newDeck);
+  return newDeck;
 }
 
 function dealCards() {
   playing = true;
   for (let i = 0; i < 7; i++) {
     // Deal a card to the user
-    user_hand.push(draw_pile[draw_pile.length - 1]);
+    user.hand.push(draw_pile[draw_pile.length - 1]);
     draw_pile.pop(draw_pile[draw_pile.length - 1]);
 
     // Deal a card to GPT
-    gpt_hand.push(draw_pile[draw_pile.length - 1]);
+    AI_player.hand.push(draw_pile[draw_pile.length - 1]);
     draw_pile.pop(draw_pile[draw_pile.length - 1]);
   }
   // console.log(`Draw pile: ${draw_pile.length}`);
-  console.log(`Pssst... GPT hand: ${gpt_hand.length} cards, ${gpt_hand}`);
-  // console.log(`User hand: ${user_hand.length} cards, ${user_hand}`);
+  console.log(
+    `Pssst... GPT hand: ${AI_player.hand.length} cards, ${AI_player.hand}`,
+  );
+  // console.log(`User hand: ${user.hand.length} cards, ${user.hand}`);
 
   return;
 }
@@ -142,8 +156,8 @@ function dealCards() {
 function showCurrentHands() {
   say(`.\n`);
   say(`There are ${draw_pile.length} cards in the draw pile`);
-  say(`Your opponent has ${gpt_hand.length} cards`);
-  say(`Your cards are: ${user_hand}`);
+  say(`Your opponent has ${AI_player.hand.length} cards`);
+  say(`Your cards are: ${user.hand}`);
   say(`\n.`);
 }
 
@@ -163,24 +177,24 @@ async function gptsTurn() {
 
 function doYouHaveAny(card_id) {
   // Check who's asking
-  if (isUsersTurn) {
+  if (user.isMyTurn) {
     // TODO: check if user has the card they asked for (later)
-    // Check gpt_hand for target_number
-    if (gpt_hand.indexOf(card_id) != -1) {
+    // Check AI_player.hand for target_number
+    if (AI_player.hand.indexOf(card_id) != -1) {
       const target_indices = [];
-      // Check each index of gpt_hand
-      for (let i = 0; i < gpt_hand.length; i++) {
+      // Check each index of AI_player.hand
+      for (let i = 0; i < AI_player.hand.length; i++) {
         // Add each match to user's hand
-        if (gpt_hand[i] === card_id) {
-          user_hand.push(gpt_hand[i]);
+        if (AI_player.hand[i] === card_id) {
+          user.hand.push(AI_player.hand[i]);
           target_indices.push(i);
         }
       }
       say(`Yes, I have ${target_indices.length} ${card_id}'s`);
 
-      // Remove them from gpt_hand
+      // Remove them from AI_player.hand
       for (let i = 0; i < target_indices.length; i++) {
-        gpt_hand.splice(i, 1);
+        AI_player.hand.splice(i, 1);
       }
     } else {
       say(`Nope, I don't have any ${card_id}'s!`);
@@ -196,29 +210,30 @@ function doYouHaveAny(card_id) {
 
 function goFish() {
   // Pick a card from "top of pile"
-  if (isUsersTurn) {
+  if (user.isMyTurn) {
     // Add card to user hand and take from deck
-    user_hand.push(draw_pile[draw_pile.length - 1]);
+    user.hand.push(draw_pile[draw_pile.length - 1]);
     draw_pile.pop(draw_pile[draw_pile.length - 1]);
-    say(`You picked up a ${user_hand[user_hand.length - 1]}!`);
-    if (user_hand[user_hand.length - 1] === target_card) {
+    say(`You picked up a ${user.hand[user.hand.length - 1]}!`);
+    if (user.hand[user.hand.length - 1] === target_card) {
       say(`It's just what you were looking for~ \n Go again!`);
+      say(`Your cards are: ${user.hand}`);
       target_card = ask("Which card would you like to ask for?");
       doYouHaveAny(target_card);
     } else {
-      isUsersTurn = false;
+      user.isMyTurn = false;
       return;
     }
   } else {
     // GPT picks up a card
-    gpt_hand.push(draw_pile[draw_pile.length - 1]);
+    AI_player.hand.push(draw_pile[draw_pile.length - 1]);
     draw_pile.pop(draw_pile[draw_pile.length - 1]);
   }
-  return user_hand, gpt_hand;
+  return user.hand, AI_player.hand;
 }
 
 function checkGameOver() {
-  if (draw_pile.length <= 0 || gpt_hand <= 0 || user_hand <= 0) {
+  if (draw_pile.length <= 0 || AI_player.hand <= 0 || user.hand <= 0) {
     whoWon();
     // TODO: ask what's next
     // TODO: clear hands and start over
