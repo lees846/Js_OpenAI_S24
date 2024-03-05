@@ -92,7 +92,7 @@ class Player {
         }
       }
       ask(
-        `Yes, I have ${target_indices.length} ${card_id}'s\nPass cards over [hit enter]`,
+        `Yes, I have ${target_indices.length} ${card_id}'s\n>>Pass cards over`,
       );
 
       // Remove them from opponent.hand
@@ -115,6 +115,7 @@ class Player {
     return this.hand, opponent.hand;
   }
 
+  // TODO: Don't announce which card the opponent picks up unless it's right!
   goFish(opponent) {
     // Pick a card from "top of pile", add to hand, and take from deck
     this.hand.push(draw_pile[draw_pile.length - 1]);
@@ -125,7 +126,7 @@ class Player {
       say(`It's just what ${opponent} was looking for~ \n Go again!`);
       say(`Your cards are: ${this.hand}`);
       // TODO: Make player/gpt specific - function?
-      target_card = ask("Which card would you like to ask for?");
+      getTargetCard(this);
       this.askForCard(opponent, target_card);
     } else {
       this.isMyTurn = false;
@@ -133,9 +134,62 @@ class Player {
     }
   }
 
-  checkBooks() {
-    // look for matches of 4 in this.hand
-    // if a number appears 4 times,
+  updateBooks() {
+    const repeat_card_ids = [];
+    const numOfRepeats = [];
+    // Check each card in this.hand
+    for (let i = 0; i < this.hand.length; i++) {
+      const current_card_id = this.hand[i];
+      // Check if value of current card is found after the current index & not already stored
+      if (
+        this.hand.indexOf(current_card_id, i + 1) != -1 &&
+        repeat_card_ids.indexOf(current_card_id) === -1
+      ) {
+        // If there's a new repeat, add the value to repeat cards
+        repeat_card_ids.push(current_card_id);
+        let repeats = 0;
+        // Then increment a counter whenever that value is found in the hand
+        for (let j = 0; j < this.hand.length; j++) {
+          // If the card is the same as the newest card added to the repeat_card_ids list
+          if (this.hand[j] === repeat_card_ids[repeat_card_ids.length - 1]) {
+            // Count it
+            repeats++;
+          }
+        }
+        numOfRepeats.push(repeats);
+      }
+    }
+    ask(
+      `Just looked for repeats.\n Your Hand: ${this.hand}, Repeat Cards: ${repeat_card_ids}, Each Repeats: ${numOfRepeats}\nYour Books: ${this.books}`,
+    );
+    // Save repeats of 4+ to books & pull those cards from active hand
+    for (let i = 0; i < numOfRepeats.length; i++) {
+      if (numOfRepeats[i] >= 4) {
+        this.books.push(repeat_card_ids[i]);
+        ask(`I just pushed ${repeat_card_ids[i]} to books!`);
+
+        for (let j = this.hand.length; j > 0; j--) {
+          // Remove them from this.hand
+          if (this.hand[j] === repeat_card_ids[i]) {
+            this.hand.splice(j, 1);
+          }
+        }
+      }
+    }
+    ask(
+      `Just pulled books from hand.\n Your Hand: ${this.hand}, Repeat Cards: ${repeat_card_ids}, Each Repeats: ${numOfRepeats}\nYour Books: ${this.books}`,
+    );
+    // Remove repeats from repeat array if they've been moved to books
+    for (let i = repeat_card_ids.length; i > 0; i--) {
+      // Remove them from repeat_card_ids
+      if (this.books.indexOf(repeat_card_ids[i]) != -1) {
+        repeat_card_ids.splice(i, 1);
+        numOfRepeats.splice(i, 1);
+      }
+    }
+    ask(
+      `Just Pulled books from repeats.\n Your Hand: ${this.hand}, Repeat Cards: ${repeat_card_ids}, Each Repeats: ${numOfRepeats}\nYour Books: ${this.books}`,
+    );
   }
 }
 
@@ -144,9 +198,9 @@ const AI_player = new Player(false, false, [], []);
 
 main();
 
+// * MAIN FUNCTION
 async function main() {
   startGame();
-
   while (playing) {
     showCurrentHands();
 
@@ -161,8 +215,8 @@ async function main() {
       user.isMyTurn = true;
       // TODO: make sure to narrate.
     }
-    // user.checkBooks();
-    // AI_player.checkBooks();
+    user.updateBooks();
+    // AI_player.updateBooks();
     // TODO: check for books/matches/points
     checkGameOver();
   }
@@ -178,7 +232,7 @@ function startGame() {
   // const rulesKnown = await ask("Do you know the rules?");
 
   say("I'll deal the cards...");
-  dealCards();
+  dealCards(7);
 }
 
 // TODO: Currently making both hands fairly similar 02/27/24
@@ -196,14 +250,13 @@ function shuffleDeck(deck, newDeck) {
     // Add it to the shuffled draw pile
     newDeck.push(deck.splice(card_to_move, 1)[0]);
   }
-  console.log(newDeck);
   return newDeck;
 }
 
-function dealCards() {
+function dealCards(numCards) {
   playing = true;
   // TODO: Can I do for each Player, deal 7 cards?
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < numCards; i++) {
     // Deal a card to the user
     user.hand.push(draw_pile[draw_pile.length - 1]);
     draw_pile.pop(draw_pile[draw_pile.length - 1]);
@@ -221,7 +274,9 @@ function showCurrentHands() {
   say(`There are ${draw_pile.length} cards in the draw pile`);
   say(`Your opponent has ${AI_player.hand.length} cards`);
   say(`PSSST... They're ${AI_player.hand}`);
+  // show books
   say(`Your cards are: ${user.hand}`);
+  // show books
   say(`\n.`);
 }
 
