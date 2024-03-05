@@ -71,11 +71,12 @@ let playing = false;
 let target_card;
 
 class Player {
-  constructor(isUser, isMyTurn, hand, books) {
+  constructor(isUser, isMyTurn, hand, books, recentAsks) {
     this.isUser = isUser;
     this.isMyTurn = isMyTurn;
     this.hand = hand;
     this.books = books; // a book is a set of 4 cards, all the same number
+    this.recentAsks = recentAsks;
   }
 
   askForCard(opponent, card_id) {
@@ -115,15 +116,24 @@ class Player {
     return this.hand, opponent.hand;
   }
 
-  // TODO: Don't announce which card the opponent picks up unless it's right!
+  // TODO: Make sure GPT can go multiple times in a row
   goFish(opponent) {
     // Pick a card from "top of pile", add to hand, and take from deck
     this.hand.push(draw_pile[draw_pile.length - 1]);
     draw_pile.pop(draw_pile[draw_pile.length - 1]);
-    ask(`It's a ${this.hand[this.hand.length - 1]}!\n[hit enter]`);
+    if (!this.isUser) {
+      ask(`They picked up a card...\n>>`);
+    } else {
+      ask(`It's a ${this.hand[this.hand.length - 1]}!\n>>`);
+    }
 
     if (this.hand[this.hand.length - 1] === target_card) {
-      say(`It's just what ${opponent} was looking for~ \n Go again!`);
+      say(`It's just the card I was looking for~ \n >>Go again!`);
+      if (this.isUser) {
+        this.updateBooks("You");
+      } else {
+        this.updateBooks("Opponent");
+      }
       say(`Your cards are: ${this.hand}`);
       // TODO: Make player/gpt specific - function?
       getTargetCard(this);
@@ -134,7 +144,7 @@ class Player {
     }
   }
 
-  updateBooks() {
+  updateBooks(whoString) {
     const repeat_card_ids = [];
     const numOfRepeats = [];
     // Check each card in this.hand
@@ -159,14 +169,12 @@ class Player {
         numOfRepeats.push(repeats);
       }
     }
-    ask(
-      `Just looked for repeats.\n Your Hand: ${this.hand}, Repeat Cards: ${repeat_card_ids}, Each Repeats: ${numOfRepeats}\nYour Books: ${this.books}`,
-    );
+
     // Save repeats of 4+ to books & pull those cards from active hand
     for (let i = 0; i < numOfRepeats.length; i++) {
       if (numOfRepeats[i] >= 4) {
         this.books.push(repeat_card_ids[i]);
-        ask(`I just pushed ${repeat_card_ids[i]} to books!`);
+        ask(`${whoString} now has ${repeat_card_ids[i]} added to books!`);
 
         for (let j = this.hand.length; j > 0; j--) {
           // Remove them from this.hand
@@ -176,9 +184,7 @@ class Player {
         }
       }
     }
-    ask(
-      `Just pulled books from hand.\n Your Hand: ${this.hand}, Repeat Cards: ${repeat_card_ids}, Each Repeats: ${numOfRepeats}\nYour Books: ${this.books}`,
-    );
+
     // Remove repeats from repeat array if they've been moved to books
     for (let i = repeat_card_ids.length; i > 0; i--) {
       // Remove them from repeat_card_ids
@@ -187,14 +193,16 @@ class Player {
         numOfRepeats.splice(i, 1);
       }
     }
-    ask(
-      `Just Pulled books from repeats.\n Your Hand: ${this.hand}, Repeat Cards: ${repeat_card_ids}, Each Repeats: ${numOfRepeats}\nYour Books: ${this.books}`,
-    );
+    if (this.isUser) {
+      ask(
+        `${whoString} Hand: ${this.hand}, Repeat Cards: ${repeat_card_ids}, Each Repeats: ${numOfRepeats}\n${whoString} Books: ${this.books}\n>>`,
+      );
+    }
   }
 }
 
-const user = new Player(true, true, [], []); // User will always go first for now
-const AI_player = new Player(false, false, [], []);
+const user = new Player(true, true, [], [], []); // User will always go first for now
+const AI_player = new Player(false, false, [], [], []);
 
 main();
 
@@ -211,12 +219,11 @@ async function main() {
       say("Your opponent wants to know if you have any...");
       await getTargetCard(AI_player);
       AI_player.askForCard(user, target_card);
-      ask(`Your current cards: ${user.hand}\n[hit enter]`);
       user.isMyTurn = true;
       // TODO: make sure to narrate.
     }
-    user.updateBooks();
-    // AI_player.updateBooks();
+    user.updateBooks("Your");
+    AI_player.updateBooks("Opponent");
     // TODO: check for books/matches/points
     checkGameOver();
   }
@@ -271,71 +278,14 @@ function dealCards(numCards) {
 
 function showCurrentHands() {
   say(`.\n`);
-  say(`There are ${draw_pile.length} cards in the draw pile`);
   say(`Your opponent has ${AI_player.hand.length} cards`);
-  say(`PSSST... They're ${AI_player.hand}`);
-  // show books
+  // say(`PSSST... They're ${AI_player.hand}`);
+  say(`There are ${draw_pile.length} cards in the draw pile`);
+  say(`Opponent's books: ${AI_player.books}`);
   say(`Your cards are: ${user.hand}`);
-  // show books
+  say(`Your books: ${user.books}`);
   say(`\n.`);
 }
-
-function doYouHaveAny(card_id) {
-  // Check who's asking
-  if (user.isMyTurn) {
-    // TODO: check if user has the card they asked for (later)
-    // Check AI_player.hand for target_number
-    if (AI_player.hand.indexOf(card_id) != -1) {
-      const target_indices = [];
-      // Check each index of AI_player.hand
-      for (let i = 0; i < AI_player.hand.length; i++) {
-        // Add each match to user's hand
-        if (AI_player.hand[i] === card_id) {
-          user.hand.push(AI_player.hand[i]);
-          target_indices.push(i);
-        }
-      }
-      say(`Yes, I have ${target_indices.length} ${card_id}'s`);
-
-      // Remove them from AI_player.hand
-      for (let i = 0; i < target_indices.length; i++) {
-        AI_player.hand.splice(i, 1);
-      }
-    } else {
-      say(`Nope, I don't have any ${card_id}'s!`);
-      say("Go Fish!");
-      goFish();
-    }
-  } else {
-    // TODO: GPT Turn
-  }
-
-  return;
-}
-
-// function goFish() {
-//   // Pick a card from "top of pile"
-//   if (user.isMyTurn) {
-//     // Add card to user hand and take from deck
-//     user.hand.push(draw_pile[draw_pile.length - 1]);
-//     draw_pile.pop(draw_pile[draw_pile.length - 1]);
-//     say(`You picked up a ${user.hand[user.hand.length - 1]}!`);
-//     if (user.hand[user.hand.length - 1] === target_card) {
-//       say(`It's just what you were looking for~ \n Go again!`);
-//       say(`Your cards are: ${user.hand}`);
-//       target_card = ask("Which card would you like to ask for?");
-//       doYouHaveAny(target_card);
-//     } else {
-//       user.isMyTurn = false;
-//       return;
-//     }
-//   } else {
-//     // GPT picks up a card
-//     AI_player.hand.push(draw_pile[draw_pile.length - 1]);
-//     draw_pile.pop(draw_pile[draw_pile.length - 1]);
-//   }
-//   return user.hand, AI_player.hand;
-// }
 
 async function getTargetCard(whosAsking) {
   if (whosAsking.isUser) {
@@ -346,15 +296,16 @@ async function getTargetCard(whosAsking) {
     target_card = await gptPrompt(
       `We are playing a game of Go Fish! You may ask me if I have any one of the cards in your hand, 
       and the goal is to make sets ("books") of 4 matching cards, represented by numbers or letters. 
-      Your hand is ${whosAsking.hand}.
+      Your hand is ${whosAsking.hand} and you have asked for these cards so far: ${whosAsking.recentAsks}. Might be worth switching your ask from time to time.
       What card would you like to ask me for? Respond with ONLY ONE letter OR number that corresponds with a card in your hand. 10 is the only 2-digit exception.
       Example 1: your hand = [J, J, K, 1, 4, 5], your output = J
-      Example 2: your hand = [A, 2, 2, 1, 6, Q], your output = 2
+      Example 2: your hand = [A, 6, 2, 1, 2, Q], your output = 2
       Example 3: your hand = [10, 10, 3, J, 10, K], your output = 10
       I will read the string you return with javascript, so make sure it is only one number or letter.
       `,
     );
-    say(`${target_card}'s?\n[hit enter]`);
+    whosAsking.recentAsks.push(target_card);
+    say(`${target_card}'s?\n>>`);
   }
 }
 
@@ -370,6 +321,12 @@ function checkGameOver() {
 }
 
 function whoWon() {
-  // TODO: say who won
+  if (AI_player.books.length > user.books.length) {
+    ask(`Opponent won! Thanks for playing!`);
+  } else if (user.books.length > AI_player.books.length) {
+    ask(`You won! Thanks for playing!`);
+  } else if (user.books.length === AI_player.books.length) {
+    ask(`You tied! Thanks for playing!`);
+  }
   return;
 }
