@@ -8,8 +8,8 @@ taught by Justin Bakse in Spring 2024.
 ## GPT
 
 The Js_OpenAI_S24 repo uses the GPT API from OpenAI, to run this you need to add
-your own `.env` file. The only thing the file needs is `OPENAI_API_KEY=`
-followed by your API key (this should not be a string).
+your own `.env` file in the `src` folder. The only thing the file needs is
+`OPENAI_API_KEY=` followed by your API key (this should not be a string).
 
 ## Deno
 
