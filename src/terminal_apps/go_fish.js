@@ -10,6 +10,7 @@
 
 import { gptPrompt } from "../shared/ai.js";
 import { ask, say } from "../shared/cli.js";
+import boxen from "boxen";
 
 // Array of cards with just one number or letter, no suits
 const deck_of_cards = [
@@ -69,6 +70,11 @@ const deck_of_cards = [
 const draw_pile = [];
 let playing = false;
 let target_card;
+
+// Variables for card graphics
+const redCard = "1";
+const whiteCard = "7";
+const yellowCard = "3";
 
 class Player {
   constructor(isUser, isMyTurn, hand, books, recentAsks) {
@@ -221,6 +227,8 @@ main();
 async function main() {
   startGame();
   while (playing) {
+    // Sort User's hand for legibilty
+    user.hand.sort();
     showCurrentHands();
 
     if (user.isMyTurn) {
@@ -245,12 +253,14 @@ function startGame() {
   shuffleDeck(draw_pile, deck_of_cards);
   shuffleDeck(deck_of_cards, draw_pile);
 
-  say("Let's play Go Fish!");
+  say("Let's play Go Fish!"); //TODO: Boxen Start
   // const rulesKnown = await ask("Do you know the rules?");
 
   // TODO: Introduce GPT w/ call?
   ask("I'll deal the cards...\n>>Press Enter to continue!");
   dealCards(7);
+  // Sort user's hand before displayed
+  user.hand.sort();
 }
 
 // TODO: Currently making both hands fairly similar 02/27/24
@@ -289,13 +299,71 @@ function dealCards(numCards) {
 
 function showCurrentHands() {
   say(`.\n`);
+  // The printCardsInRow function take an array of symbols & a color
+  const AI_cards_array = [];
+  for (let i = 0; i < AI_player.hand.length; i++) {
+    // Select a symbol for the back of the cards :)
+    AI_cards_array.push("★");
+  }
+  printCardsInRow(AI_cards_array, redCard);
   say(`Your opponent has ${AI_player.hand.length} cards`);
-  // say(`PSSST... They're ${AI_player.hand}`);
-  say(`There are ${draw_pile.length} cards in the draw pile`);
   say(`Opponent's books: ${AI_player.books}`);
-  say(`Your cards are: ${user.hand}`);
+  printCardsInRow(AI_player.books, yellowCard);
+  // say(`PSSST... They're ${AI_player.hand}`);
+
+  console.log(
+    boxen(
+      `${
+        boxen(`${draw_pile.length}`, {
+          borderStyle: "double",
+          backgroundColor: "white",
+        })
+      }`,
+      {
+        Type: "singleDouble",
+        padding: 4,
+        backgroundColor: "#105e37",
+        title: "DRAW PILE",
+        titleAlignment: "center",
+      },
+    ),
+  );
+
   say(`Your books: ${user.books}`);
+  printCardsInRow(user.books, yellowCard);
+  say(`Your cards are: ${user.hand}`);
+  printCardsInRow(user.hand, whiteCard);
+
   say(`\n.`);
+}
+
+// GPT-Generated to work with strings taken from boxen using say() which prints the chtrs
+// I knew I had to print the cards in sections and wanted to implement it faster
+// Updated to deal with array of strings (breaks w/ 10's. sad.)
+function printCardsInRow(chars, colInt) {
+  let topRow = "";
+  let middleRow = "";
+  let bottomRow = "";
+
+  // Check if chars is an array. If not, make it an array of one element.
+  if (!Array.isArray(chars)) {
+    chars = [chars];
+  }
+
+  for (let i = 0; i < chars.length; i++) {
+    const top = "┌─┐";
+    const middle = `│\x1b[4${colInt}m${chars[i]}\x1b[49m│`; // Use the ith character from the chars array
+    const bottom = "└─┘";
+
+    topRow += top;
+    middleRow += middle;
+    bottomRow += bottom;
+  }
+
+  // Join and print the complete card row
+  console.log(topRow);
+  console.log(middleRow);
+  console.log(bottomRow);
 }
 
 async function getTargetCard(whosAsking) {
