@@ -80,8 +80,7 @@ class Player {
   }
 
   askForCard(opponent, card_id) {
-    // Check who's asking
-    // TODO: check if user has the card they asked for (later)
+    // TODO: check if user has the card they want to ask for (later)
     // Check opponent's hand for target_number
     if (opponent.hand.indexOf(card_id) != -1) {
       const target_indices = [];
@@ -92,6 +91,7 @@ class Player {
           target_indices.push(i);
         }
       }
+      // TODO: Singular vs. Plural
       ask(
         `Yes, I have ${target_indices.length} ${card_id}'s\n>>Pass cards over`,
       );
@@ -109,6 +109,9 @@ class Player {
         }
       }
     } else {
+      if (!user.isMyTurn) {
+        say(`((You currently have: ${user.hand}))`);
+      }
       say(`Nope, I don't have any ${card_id}'s!`);
       ask(">>Go Fish!");
       this.goFish(opponent);
@@ -121,29 +124,37 @@ class Player {
     // Pick a card from "top of pile", add to hand, and take from deck
     this.hand.push(draw_pile[draw_pile.length - 1]);
     draw_pile.pop(draw_pile[draw_pile.length - 1]);
+
+    // Different action depending on player vs. AI:
     if (!this.isUser) {
       ask(`They picked up a card...\n>>`);
-    } else {
-      ask(`It's a ${this.hand[this.hand.length - 1]}!\n>>`);
-    }
-
-    if (this.hand[this.hand.length - 1] === target_card) {
-      say(`It's just the card I was looking for~ \n >>Go again!`);
-      if (this.isUser) {
-        this.updateBooks("You");
+      // Check if the card picked up is what they wanted
+      if (this.hand[this.hand.length - 1] === target_card) {
+        ask(`It's just the card I was looking for~ \n >>I'll go again!`);
+        this.updateBooks("Opponent's");
+        getTargetCard(this);
+        this.askForCard(opponent, target_card);
       } else {
-        this.updateBooks("Opponent");
+        this.isMyTurn = false;
+        opponent.isMyTurn = true;
       }
-      say(`Your cards are: ${this.hand}`);
-      // TODO: Make player/gpt specific - function?
-      getTargetCard(this);
-      this.askForCard(opponent, target_card);
-    } else {
-      this.isMyTurn = false;
-      return this.hand, opponent.hand;
+    } else { // if this.isUser
+      ask(`I picked up a ${this.hand[this.hand.length - 1]}!\n>>`); //TODO: "an Ace"
+      if (this.hand[this.hand.length - 1] === target_card) {
+        ask(`It's just the card you were looking for~ \n >>Go again!`);
+        this.updateBooks("Your"); //TODO: Grammar w/ call  *******
+        // say(`Your cards are now: ${this.hand}`);
+        getTargetCard(this); //TODO: User vs this?
+        this.askForCard(opponent, target_card);
+      } else {
+        this.isMyTurn = false;
+        opponent.isMyTurn = true;
+      }
     }
+    return this.hand, opponent.hand;
   }
 
+  //TODO: Iterate backwards through cards
   updateBooks(whoString) {
     const repeat_card_ids = [];
     const numOfRepeats = [];
@@ -174,7 +185,7 @@ class Player {
     for (let i = 0; i < numOfRepeats.length; i++) {
       if (numOfRepeats[i] >= 4) {
         this.books.push(repeat_card_ids[i]);
-        ask(`${whoString} now has ${repeat_card_ids[i]} added to books!`);
+        ask(`${whoString} now has ${repeat_card_ids[i]} added to books!`); //TODO: "Your now has ..."
 
         for (let j = this.hand.length; j > 0; j--) {
           // Remove them from this.hand
@@ -195,7 +206,7 @@ class Player {
     }
     if (this.isUser) {
       ask(
-        `${whoString} Hand: ${this.hand}, Repeat Cards: ${repeat_card_ids}, Each Repeats: ${numOfRepeats}\n${whoString} Books: ${this.books}\n>>`,
+        `\n${whoString} Hand: ${this.hand}, Repeat Cards: ${repeat_card_ids}, Each Repeats: ${numOfRepeats}\n${whoString} Books: ${this.books}\n>>`,
       );
     }
   }
@@ -219,7 +230,6 @@ async function main() {
       say("Your opponent wants to know if you have any...");
       await getTargetCard(AI_player);
       AI_player.askForCard(user, target_card);
-      user.isMyTurn = true;
       // TODO: make sure to narrate.
     }
     user.updateBooks("Your");
@@ -238,7 +248,8 @@ function startGame() {
   say("Let's play Go Fish!");
   // const rulesKnown = await ask("Do you know the rules?");
 
-  say("I'll deal the cards...");
+  // TODO: Introduce GPT w/ call?
+  ask("I'll deal the cards...\n>>Press Enter to continue!");
   dealCards(7);
 }
 
@@ -306,6 +317,7 @@ async function getTargetCard(whosAsking) {
     );
     whosAsking.recentAsks.push(target_card);
     say(`${target_card}'s?\n>>`);
+    // TODO: Say cards if user so they can see what they're about to play
   }
 }
 
