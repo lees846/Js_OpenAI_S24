@@ -10,7 +10,7 @@
 
 import { gptPrompt } from "../shared/ai.js";
 import { ask, say } from "../shared/cli.js";
-import boxen from "boxen";
+import boxen from "boxen"; // https://github.com/sindresorhus/boxen?tab=readme-ov-file
 
 // Array of cards with just one number or letter, no suits
 const deck_of_cards = [
@@ -86,7 +86,7 @@ class Player {
   }
 
   askForCard(opponent, card_id) {
-    // TODO: check if user has the card they want to ask for (later)
+    // TODO: check if user has the card they want to ask for (later, https://github.com/c4spar/deno-cliffy)
     // Check opponent's hand for target_number
     if (opponent.hand.indexOf(card_id) != -1) {
       const target_indices = [];
@@ -98,8 +98,9 @@ class Player {
         }
       }
       // TODO: Singular vs. Plural
+      printCardsInRow(card_id, whiteCard);
       ask(
-        `Yes, I have ${target_indices.length} ${card_id}'s\n>>Pass cards over`,
+        `Yes, I have ${target_indices.length}\n>>Pass cards over`,
       );
 
       // Remove them from opponent.hand
@@ -116,7 +117,9 @@ class Player {
       }
     } else {
       if (!user.isMyTurn) {
-        say(`((You currently have: ${user.hand}))`);
+        say(`Current hand:`);
+        printCardsInRow(user.hand, whiteCard);
+        ask(`\n>>`);
       }
       say(`Nope, I don't have any ${card_id}'s!`);
       ask(">>Go Fish!");
@@ -125,7 +128,6 @@ class Player {
     return this.hand, opponent.hand;
   }
 
-  // TODO: Make sure GPT can go multiple times in a row
   goFish(opponent) {
     // Pick a card from "top of pile", add to hand, and take from deck
     this.hand.push(draw_pile[draw_pile.length - 1]);
@@ -133,6 +135,7 @@ class Player {
 
     // Different action depending on player vs. AI:
     if (!this.isUser) {
+      printCardsInRow(["★"], redCard);
       ask(`They picked up a card...\n>>`);
       // Check if the card picked up is what they wanted
       if (this.hand[this.hand.length - 1] === target_card) {
@@ -145,10 +148,11 @@ class Player {
         opponent.isMyTurn = true;
       }
     } else { // if this.isUser
-      ask(`I picked up a ${this.hand[this.hand.length - 1]}!\n>>`); //TODO: "an Ace"
+      printCardsInRow(user.hand[user.hand.length - 1], whiteCard);
+      ask(`You picked up a ${this.hand[this.hand.length - 1]}!\n>>`); //TODO: "an Ace"
       if (this.hand[this.hand.length - 1] === target_card) {
         ask(`It's just the card you were looking for~ \n >>Go again!`);
-        this.updateBooks("Your"); //TODO: Grammar w/ call  *******
+        this.updateBooks("Your"); //TODO: Grammar w/ call
         // say(`Your cards are now: ${this.hand}`);
         getTargetCard(this); //TODO: User vs this?
         this.askForCard(opponent, target_card);
@@ -160,7 +164,7 @@ class Player {
     return this.hand, opponent.hand;
   }
 
-  //TODO: Iterate backwards through cards
+  //TODO: Iterate backwards through cards to solve index 0 card not removed
   updateBooks(whoString) {
     const repeat_card_ids = [];
     const numOfRepeats = [];
@@ -191,7 +195,7 @@ class Player {
     for (let i = 0; i < numOfRepeats.length; i++) {
       if (numOfRepeats[i] >= 4) {
         this.books.push(repeat_card_ids[i]);
-        ask(`${whoString} now has ${repeat_card_ids[i]} added to books!`); //TODO: "Your now has ..."
+        ask(`${repeat_card_ids[i]} has been added to books!`); //TODO: "Your now has ..."
 
         for (let j = this.hand.length; j > 0; j--) {
           // Remove them from this.hand
@@ -211,6 +215,7 @@ class Player {
       }
     }
     if (this.isUser) {
+      printCardsInRow(user.hand, whiteCard);
       ask(
         `\n${whoString} Hand: ${this.hand}, Repeat Cards: ${repeat_card_ids}, Each Repeats: ${numOfRepeats}\n${whoString} Books: ${this.books}\n>>`,
       );
@@ -238,11 +243,11 @@ async function main() {
       say("Your opponent wants to know if you have any...");
       await getTargetCard(AI_player);
       AI_player.askForCard(user, target_card);
-      // TODO: make sure to narrate.
     }
+
+    // Check for books/matches/points
     user.updateBooks("Your");
     AI_player.updateBooks("Opponent");
-    // TODO: check for books/matches/points
     checkGameOver();
   }
 }
@@ -253,7 +258,25 @@ function startGame() {
   shuffleDeck(draw_pile, deck_of_cards);
   shuffleDeck(deck_of_cards, draw_pile);
 
-  say("Let's play Go Fish!"); //TODO: Boxen Start
+  say("\n");
+  console.log(
+    boxen(
+      `${
+        boxen(`${draw_pile.length}`, {
+          borderStyle: "double",
+          backgroundColor: "white",
+        })
+      }`,
+      {
+        Type: "singleDouble",
+        padding: 4,
+        backgroundColor: "#105e37",
+        title: "★ Let's play Go Fish! ★",
+        titleAlignment: "center",
+      },
+    ),
+  );
+  // TODO: Rules option
   // const rulesKnown = await ask("Do you know the rules?");
 
   // TODO: Introduce GPT w/ call?
@@ -263,8 +286,8 @@ function startGame() {
   user.hand.sort();
 }
 
-// TODO: Currently making both hands fairly similar 02/27/24
-// 03/03/24: Call >1x for better shuffle
+// Was originally making both hands fairly similar 02/27/24
+// 03/03/24: Can call >1x for better shuffle
 function shuffleDeck(deck, newDeck) {
   // Implementation based on https://bost.ocks.org/mike/shuffle/
   let remaining_elements = deck.length;
@@ -298,7 +321,7 @@ function dealCards(numCards) {
 }
 
 function showCurrentHands() {
-  say(`.\n`);
+  say(`\n──────────────────────────────\n`);
   // The printCardsInRow function take an array of symbols & a color
   const AI_cards_array = [];
   for (let i = 0; i < AI_player.hand.length; i++) {
@@ -333,7 +356,7 @@ function showCurrentHands() {
   printCardsInRow(user.books, yellowCard);
   say(`Your cards are: ${user.hand}`);
   printCardsInRow(user.hand, whiteCard);
-
+  // TODO: Move card stats
   say(`\n.`);
 }
 
@@ -352,7 +375,7 @@ function printCardsInRow(chars, colInt) {
 
   for (let i = 0; i < chars.length; i++) {
     const top = "┌─┐";
-    const middle = `\x1b[4${colInt}m${chars[i]}\x1b[49m`; // Use the ith character from the chars array
+    const middle = `│\x1b[4${colInt}m${chars[i]}\x1b[49m│`; // Use the ith character from the chars array
     const bottom = "└─┘";
 
     topRow += top;
@@ -384,16 +407,15 @@ async function getTargetCard(whosAsking) {
       `,
     );
     whosAsking.recentAsks.push(target_card);
-    say(`${target_card}'s?\n>>`);
-    // TODO: Say cards if user so they can see what they're about to play
+    say(`${target_card}'s?`);
   }
 }
 
 function checkGameOver() {
   if (draw_pile.length <= 0 || AI_player.hand <= 0 || user.hand <= 0) {
     whoWon();
-    // TODO: ask what's next
-    // TODO: clear hands and start over
+    // CouldDo: ask what's next
+    // CouldDo: clear hands and start over
     playing = false;
   } else {
     return; // keep playing
@@ -402,7 +424,7 @@ function checkGameOver() {
 
 function whoWon() {
   if (AI_player.books.length > user.books.length) {
-    say(`Your opponent has ${AI_player.hand.length} cards`);
+    printCardsInRow(AI_player.books, yellowCard);
     say(`Opponent's books: ${AI_player.books}`);
     console.log(
       boxen(
