@@ -352,7 +352,7 @@ function printCardsInRow(chars, colInt) {
 
   for (let i = 0; i < chars.length; i++) {
     const top = "┌─┐";
-    const middle = `│\x1b[4${colInt}m${chars[i]}\x1b[49m│`; // Use the ith character from the chars array
+    const middle = `\x1b[4${colInt}m${chars[i]}\x1b[49m`; // Use the ith character from the chars array
     const bottom = "└─┘";
 
     topRow += top;
@@ -402,8 +402,40 @@ function checkGameOver() {
 
 function whoWon() {
   if (AI_player.books.length > user.books.length) {
+    say(`Your opponent has ${AI_player.hand.length} cards`);
+    say(`Opponent's books: ${AI_player.books}`);
+    console.log(
+      boxen(
+        `*!* YOU LOSE! *!*`,
+        {
+          Type: "none",
+          padding: 4,
+          backgroundColor: "#e60000",
+          title: "GAME OVER",
+          titleAlignment: "center",
+        },
+      ),
+    );
+    say(`Your books: ${user.books}`);
+    printCardsInRow(user.books, yellowCard);
     ask(`Opponent won! Thanks for playing!`);
   } else if (user.books.length > AI_player.books.length) {
+    say(`Your opponent has ${AI_player.hand.length} cards`);
+    say(`Opponent's books: ${AI_player.books}`);
+    console.log(
+      boxen(
+        `★ YOU WON! ★`,
+        {
+          Type: "none",
+          padding: 4,
+          backgroundColor: "#105e37",
+          title: "GAME OVER",
+          titleAlignment: "center",
+        },
+      ),
+    );
+    say(`Your books: ${user.books}`);
+    printCardsInRow(user.books, yellowCard);
     ask(`You won! Thanks for playing!`);
   } else if (user.books.length === AI_player.books.length) {
     ask(`You tied! Thanks for playing!`);
