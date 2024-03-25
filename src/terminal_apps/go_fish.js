@@ -139,7 +139,7 @@ class Player {
       ask(`They picked up a card...\n>>`);
       // Check if the card picked up is what they wanted
       if (this.hand[this.hand.length - 1] === target_card) {
-        ask(`It's just the card I was looking for~ \n >>I'll go again!`);
+        ask(`It's just the card I was looking for~ \n >>I'll go again!`); //TODO: gpt restart awkward here
         this.updateBooks("Opponent's");
         getTargetCard(this);
         this.askForCard(opponent, target_card);
@@ -392,7 +392,8 @@ function printCardsInRow(chars, colInt) {
 async function getTargetCard(whosAsking) {
   if (whosAsking.isUser) {
     target_card = ask(
-      "Which card would you like to ask for? Only respond with the letter or number: ",
+      `Which card would you like to ask for?
+Only respond with the letter or number: `,
     );
   } else {
     target_card = await gptPrompt(
