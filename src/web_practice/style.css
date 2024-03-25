@@ -1,1 +1,75 @@
 /* This project is made in collaboration with ChatGPT */
+/* Header styling */
+header {
+    text-align: center;
+    padding: 20px;
+    background-color: #f0f0f0;
+    margin: -10px;
+    color: #336633;
+    box-shadow: 0px 10px 8px 0px #1d221e68;
+
+}
+
+/* Body styling */
+body {
+    background-image: url('assets/bkgnd_tile.jpeg');
+    background-repeat: repeat;
+    background-position: center;
+}
+
+/* Navigation styling */
+nav {
+    background-color: #303531;
+    padding: 0px 20px 0px 20px;
+    margin: 20px auto;
+    max-width: 800px;
+    border-radius: 8px;
+    box-shadow: 0px 10px 8px 0px #1d221eb6 inset;
+
+}
+
+nav ul {
+    list-style: none;
+    padding: 10px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+nav li.nav-image {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+nav li.nav-image img {
+    width: 100px; /* Adjust as needed */
+    height: auto;
+    transition: transform 0.3s ease;
+}
+
+nav li.nav-image img:hover {
+    transform: scale(1.1);
+}
+
+/* Article styling */
+article {
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    max-width: 800px;
+    box-shadow: 0px 10px 8px 0px #1d221e68;
+}
+
+.blog-h1 {
+    color: #336633; /* A green that complements plant photos */
+    font-size: 24px; /* Larger size for h1 */
+}
+
+.blog-h2 {
+    color: #336633;
+    font-size: 20px; /* Smaller size for h2 */
+}
+
+.blog-p {
+    line-height: 1.6;
+}
