@@ -1,4 +1,5 @@
 /* This project is made in collaboration with ChatGPT */
+
 /* Header styling */
 header {
     text-align: center;
@@ -22,17 +23,23 @@ nav {
     background-color: #303531;
     padding: 0px 20px 0px 20px;
     margin: 20px auto;
+    margin-top: 30px;
     max-width: 800px;
     border-radius: 8px;
     box-shadow: 0px 10px 8px 0px #1d221eb6 inset;
 
 }
 
+nav h1 {
+    text-align: center;
+    color: #f0f0f0;
+    padding-top: 20px;
+}
+
 nav ul {
     list-style: none;
     padding: 10px;
     text-align: center;
-    margin: 20px 0;
 }
 
 nav li.nav-image {
@@ -72,4 +79,9 @@ article {
 
 .blog-p {
     line-height: 1.6;
+}
+
+/* CSS Classes */
+.hidden {
+    display: none;
 }
