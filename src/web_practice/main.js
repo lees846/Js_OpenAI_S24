@@ -1,6 +1,8 @@
 // This project is made in collaboration with ChatGPT
 
 const navImages = document.getElementsByClassName("nav-image");
+
+// nav image click -> toggle article visibility & darken selected image
 for (let i = 0; i < navImages.length; i++) {
   navImages[i].addEventListener("click", function (event) {
     // Refer to the image that was selected
@@ -10,11 +12,15 @@ for (let i = 0; i < navImages.length; i++) {
     const articleId = clickedImage.id.replace("-img", "-article");
     const targetArticle = document.getElementById(articleId);
 
-    // Check if it has a hidden class, take it away/add it accordingly
-    if (targetArticle.classList.contains("hidden")) {
-      targetArticle.classList.remove("hidden");
-    } else {
-      targetArticle.classList.add("hidden");
-    }
+    toggleClass(targetArticle, "hidden");
+    toggleClass(clickedImage, "darken");
   });
+}
+
+function toggleClass(whichElement, whichClass) {
+  if (whichElement.classList.contains(whichClass)) {
+    whichElement.classList.remove(whichClass);
+  } else {
+    whichElement.classList.add(whichClass);
+  }
 }

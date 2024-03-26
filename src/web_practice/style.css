@@ -82,6 +82,13 @@ article {
 }
 
 /* CSS Classes */
+/* Hide Articles */
 .hidden {
     display: none;
 }
+
+/* Darken Images */
+.darken {
+    filter: brightness(50%);
+  }
+  
