@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hello, Web GPT!</title>
+  </head>
+  <body>
+    <h1>Hello, Web GPT!</h1>
+    <input id="prompt" type="text" placeholder="prompt" />
+    <button id="send">send</button>
+    <script>
+      const promptElement = document.getElementById("prompt");
+      const sendElement = document.getElementById("send");
+      sendElement.addEventListener("click", () => {
+        fetch(`/api/gpt?prompt=${promptElement.value}`)
+          .then((response) => response.text())
+          .then((responseText) => {
+            const responseElement = document.createElement("p");
+            responseElement.innerText = responseText;
+            document.body.appendChild(responseElement);
+          });
+      });
+    </script>
+  </body>
+</html>
