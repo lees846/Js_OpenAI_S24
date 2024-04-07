@@ -3,29 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="style.css">
     <title>Limerick Generator!</title>
   </head>
   <body>
-    <h1>Limerick Generator</h1>
-
-    <h2>What is your name?</h2>
-    <input id="playerName" type="text" placeholder="your name" />
-    <h2>Where are you from?</h2>
-    <input id="playerPlace" type="text" placeholder="a place" />
-    
-    <button id="send">send</button>
+    <main>
+      <h1>Limerick Generator</h1>
+      <div id="setup">
+        <h2>What is your name?</h2>
+        <input id="playerName" type="text" placeholder="your name" />
+        <h2>Where are you from?</h2>
+        <input id="playerPlace" type="text" placeholder="a place" />
+        <button id="generate">generate</button>
+      </div>
+    </main>
     <script>
       const nameElement = document.getElementById("playerName");
       const placeElement = document.getElementById("playerPlace");
-      const sendElement = document.getElementById("send");
+      const generateElement = document.getElementById("generate");
 
-      sendElement.addEventListener("click", () => {
+      generateElement.addEventListener("click", () => {
         fetch(`/api/gpt?playerName=${playerName.value}&playerPlace=${playerPlace.value}`)
           .then((response) => response.text())
           .then((responseText) => {
-            const responseElement = document.createElement("p");
-            responseElement.innerText = responseText;
-            document.body.appendChild(responseElement);
+            const limerickInput = document.createElement("h3");
+            const responseBody = document.createElement("p");
+
+            limerickInput.innerText = `${playerName.value} from ${playerPlace.value}~`;
+            responseBody.innerText = responseText;
+            
+            document.body.appendChild(limerickInput);
+            document.body.appendChild(responseBody);
           });
       });
     </script>
