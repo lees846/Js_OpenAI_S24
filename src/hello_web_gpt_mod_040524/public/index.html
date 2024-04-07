@@ -3,17 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hello, Web GPT!</title>
+    <title>Limerick Generator!</title>
   </head>
   <body>
-    <h1>Hello, Web GPT!</h1>
-    <input id="prompt" type="text" placeholder="prompt" />
+    <h1>Limerick Generator</h1>
+
+    <h2>What is your name?</h2>
+    <input id="playerName" type="text" placeholder="your name" />
+    <h2>Where are you from?</h2>
+    <input id="playerPlace" type="text" placeholder="a place" />
+    
     <button id="send">send</button>
     <script>
-      const promptElement = document.getElementById("prompt");
+      const nameElement = document.getElementById("playerName");
+      const placeElement = document.getElementById("playerPlace");
       const sendElement = document.getElementById("send");
+
       sendElement.addEventListener("click", () => {
-        fetch(`/api/gpt?prompt=${promptElement.value}`)
+        fetch(`/api/gpt?playerName=${playerName.value}&playerPlace=${playerPlace.value}`)
           .then((response) => response.text())
           .then((responseText) => {
             const responseElement = document.createElement("p");

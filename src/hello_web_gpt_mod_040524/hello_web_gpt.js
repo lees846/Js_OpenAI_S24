@@ -12,9 +12,11 @@ const router = new Router();
 router.get("/api/gpt", async (ctx) => {
   // When html script accesses this url, the prompt
   // is sent to the api with fetch through here
-  const prompt = ctx.request.url.searchParams.get("prompt");
-  const shortPrompt = prompt.slice(0, 128);
-  const result = await gptPrompt(shortPrompt);
+  const playerName = ctx.request.url.searchParams.get("playerName");
+  const playerPlace = ctx.request.url.searchParams.get("playerPlace");
+  const limerickPrompt =
+    `My name is ${playerName} and I am from ${playerPlace}. Create a limerick about me.`;
+  const result = await gptPrompt(limerickPrompt);
   // Directly add response from api to html as string
   ctx.response.body = result;
 });
