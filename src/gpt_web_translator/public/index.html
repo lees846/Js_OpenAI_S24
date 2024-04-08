@@ -4,33 +4,37 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="style.css">
-    <title>Custom Translator</title>
+    <title>Custom Translate</title>
   </head>
   <body>
-    <nav>
-      <img src="assets/CustomTranslate_Logo.jpg" width="50px">
-    </nav>
-    <main>
-      <h1>Custom Translator</h1>
-      <p id="subtitle">
-        Welcome to Custom Translator! To get started:
-      </p>
-      <ol>
-        <li>
-          Select a <a class="inline" href="https://www.coe.int/en/web/common-european-framework-reference-languages/level-descriptions">CEFR language level</a>
-        </li>
-        <li>
-          Type in a language you're learning
-        </li>
-        <li>
-          Write or paste some text!
-        </li>
-      </ol>
-      <p>
-        It's as easy as three simple steps! Custom Translate uses the power of AI to recognize and translate your specific dialect, so you don't need to specify the starting language.
-      </p>
+    <header>
+      <nav>
+        <img src="assets/CustomTranslate_Logo.jpg" width="50px">
+      </nav>
+    </header>
+    <main id="setupContainer">
+      <aside id="instructions">
+        <h1>Custom Translate</h1>
+        <p id="subtitle">
+          Welcome to Custom Translate! To get started:
+        </p>
+        <ol>
+          <li>
+            Select a <a class="inline" href="https://www.coe.int/en/web/common-european-framework-reference-languages/level-descriptions">CEFR language level</a>
+          </li>
+          <li>
+            Type in a language you're learning
+          </li>
+          <li>
+            Write or paste some text!
+          </li>
+        </ol>
+        <p>
+          It's as easy as three simple steps! Custom Translate uses the power of AI to recognize and translate your specific dialect, so you don't need to specify the starting language.
+        </p>
+      </aside>
       <form autocomplete="on">
-        <label for="outputLanguage">Pick a language to translate to</label>
+        <label for="outputLanguage">Type a language to translate to:</label>
         <input id="outputLanguage" type="text" placeholder="any language" />
         <label for="langLevel">What is your CEFR language learning level?</label>
         <select id="langLevel" name="select CEFR level">
@@ -41,12 +45,20 @@
           <option value="c1">C1: Advanced</option>
           <option value="c2">C2: Proviciency</option>
         </select>
-        <label for="inputText">Text to translate</label>
+        <label for="inputText">Text to translate:</label>
         <textarea id="inputText" placeholder="Esse quia molestiae consectetur et accusantium explicabo id. Illo deserunt nihil facilis modi. At sapiente aliquam quos. Dolore iste eum alias cumque nisi aliquam dolorum beatae. Ea nulla eos ad quis ratione quasi unde. Quasi voluptas in quia veritatis."></textarea>
 
         <input type="submit" id="translate" value="Translate!">
       </form>
+      <section id="textOutput">
+        <p></p>
+      </section>
     </main>
+    <footer>
+      <p>
+        Custom Translate, a tool designed by Shayla Lee 2024
+      </p>
+    </footer>
     <script>
       // const nameElement = document.getElementById("playerName");
       // const placeElement = document.getElementById("playerPlace");
@@ -67,10 +79,5 @@
       //     });
       // });
     </script>
-    <footer>
-      <p>
-        Custom Translator, a tool designed by Shayla Lee 2024
-      </p>
-    </footer>
   </body>
 </html>
