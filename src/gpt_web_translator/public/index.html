@@ -4,38 +4,73 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="style.css">
-    <title>Limerick Generator!</title>
+    <title>Custom Translator</title>
   </head>
   <body>
+    <nav>
+      <img src="assets/CustomTranslate_Logo.jpg" width="50px">
+    </nav>
     <main>
-      <h1>Limerick Generator</h1>
-      <div id="setup">
-        <h2>What is your name?</h2>
-        <input id="playerName" type="text" placeholder="your name" />
-        <h2>Where are you from?</h2>
-        <input id="playerPlace" type="text" placeholder="a place" />
-        <button id="generate">generate</button>
-      </div>
+      <h1>Custom Translator</h1>
+      <p id="subtitle">
+        Welcome to Custom Translator! To get started:
+      </p>
+      <ol>
+        <li>
+          Select a <a class="inline" href="https://www.coe.int/en/web/common-european-framework-reference-languages/level-descriptions">CEFR language level</a>
+        </li>
+        <li>
+          Type in a language you're learning
+        </li>
+        <li>
+          Write or paste some text!
+        </li>
+      </ol>
+      <p>
+        It's as easy as three simple steps! Custom Translate uses the power of AI to recognize and translate your specific dialect, so you don't need to specify the starting language.
+      </p>
+      <form autocomplete="on">
+        <label for="outputLanguage">Pick a language to translate to</label>
+        <input id="outputLanguage" type="text" placeholder="any language" />
+        <label for="langLevel">What is your CEFR language learning level?</label>
+        <select id="langLevel" name="select CEFR level">
+          <option value="a1">A1: Beginner</option>
+          <option value="a2">A2: Pre-Intermediate</option>
+          <option value="b1">B1: Intermediate</option>
+          <option value="b2">B2: Upper-Intermediate</option>
+          <option value="c1">C1: Advanced</option>
+          <option value="c2">C2: Proviciency</option>
+        </select>
+        <label for="inputText">Text to translate</label>
+        <textarea id="inputText" placeholder="Esse quia molestiae consectetur et accusantium explicabo id. Illo deserunt nihil facilis modi. At sapiente aliquam quos. Dolore iste eum alias cumque nisi aliquam dolorum beatae. Ea nulla eos ad quis ratione quasi unde. Quasi voluptas in quia veritatis."></textarea>
+
+        <input type="submit" id="translate" value="Translate!">
+      </form>
     </main>
     <script>
-      const nameElement = document.getElementById("playerName");
-      const placeElement = document.getElementById("playerPlace");
-      const generateElement = document.getElementById("generate");
+      // const nameElement = document.getElementById("playerName");
+      // const placeElement = document.getElementById("playerPlace");
+      // const generateElement = document.getElementById("generate");
 
-      generateElement.addEventListener("click", () => {
-        fetch(`/api/gpt?playerName=${playerName.value}&playerPlace=${playerPlace.value}`)
-          .then((response) => response.text())
-          .then((responseText) => {
-            const limerickInput = document.createElement("h3");
-            const responseBody = document.createElement("p");
+      // generateElement.addEventListener("click", () => {
+      //   fetch(`/api/gpt?playerName=${playerName.value}&playerPlace=${playerPlace.value}`)
+      //     .then((response) => response.text())
+      //     .then((responseText) => {
+      //       const limerickInput = document.createElement("h3");
+      //       const responseBody = document.createElement("p");
 
-            limerickInput.innerText = `${playerName.value} from ${playerPlace.value}~`;
-            responseBody.innerText = responseText;
+      //       limerickInput.innerText = `${playerName.value} from ${playerPlace.value}~`;
+      //       responseBody.innerText = responseText;
             
-            document.body.appendChild(limerickInput);
-            document.body.appendChild(responseBody);
-          });
-      });
+      //       document.body.appendChild(limerickInput);
+      //       document.body.appendChild(responseBody);
+      //     });
+      // });
     </script>
+    <footer>
+      <p>
+        Custom Translator, a tool designed by Shayla Lee 2024
+      </p>
+    </footer>
   </body>
 </html>
