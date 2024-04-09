@@ -4,12 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/x-icon" href="/assets/CustomTranslate_Logo.jpg">
     <title>Custom Translate</title>
   </head>
   <body>
     <header>
       <nav>
-        <img src="assets/CustomTranslate_Logo.jpg" width="50px">
+        <img src="/assets/CustomTranslate_Logo.jpg" width="50px">
       </nav>
     </header>
     <main id="setupContainer">
@@ -20,10 +21,10 @@
         </p>
         <ol>
           <li>
-            Select a <a class="inline" href="https://www.coe.int/en/web/common-european-framework-reference-languages/level-descriptions">CEFR language level</a>
+            Type in a language you're learning
           </li>
           <li>
-            Type in a language you're learning
+            Select a <a class="inline" href="https://www.coe.int/en/web/common-european-framework-reference-languages/level-descriptions">CEFR language level</a>
           </li>
           <li>
             Write or paste some text!
@@ -43,12 +44,12 @@
           <option value="b1">B1: Intermediate</option>
           <option value="b2">B2: Upper-Intermediate</option>
           <option value="c1">C1: Advanced</option>
-          <option value="c2">C2: Proviciency</option>
+          <option value="c2">C2: Proficiency</option>
         </select>
         <label for="inputText">Text to translate:</label>
         <textarea id="inputText" placeholder="Esse quia molestiae consectetur et accusantium explicabo id. Illo deserunt nihil facilis modi. At sapiente aliquam quos. Dolore iste eum alias cumque nisi aliquam dolorum beatae. Ea nulla eos ad quis ratione quasi unde. Quasi voluptas in quia veritatis."></textarea>
 
-        <input type="submit" id="translate" value="Translate!">
+        <button id="translate">Translate!</button>
       </form>
       <section id="textOutput">
         <label for="outputParagraph">Translated Text:</label>
@@ -57,28 +58,35 @@
     </main>
     <footer>
       <p>
-        Custom Translate, a tool designed by Shayla Lee 2024
+        Custom Translate, a tool designed by Shayla Lee, 2024.
       </p>
     </footer>
     <script>
-      // const nameElement = document.getElementById("playerName");
-      // const placeElement = document.getElementById("playerPlace");
-      // const generateElement = document.getElementById("generate");
+      // Declare variables to reference each element that receives user input
+      const outputLanguageElement = document.getElementById("outputLanguage");
+      const langLevelElement = document.getElementById("langLevel");
+      const inputTextElement = document.getElementById("inputText");
+      const translateButton = document.getElementById("translate");
 
-      // generateElement.addEventListener("click", () => {
-      //   fetch(`/api/gpt?playerName=${playerName.value}&playerPlace=${playerPlace.value}`)
-      //     .then((response) => response.text())
-      //     .then((responseText) => {
-      //       const limerickInput = document.createElement("h3");
-      //       const responseBody = document.createElement("p");
+      translateButton.addEventListener("click", () => {
+        // Reference the current values of the input fields and convert to URI components for the url
+        const langLevel = encodeURIComponent(langLevelElement[langLevelElement.selectedIndex].firstChild.data);
+        const outputLanguage = encodeURIComponent(outputLanguageElement.value);
+        const inputText = encodeURIComponent(inputTextElement.value);
 
-      //       limerickInput.innerText = `${playerName.value} from ${playerPlace.value}~`;
-      //       responseBody.innerText = responseText;
+        fetch(`/api/gpt?outputLanguage=${outputLanguage}&langLevel=${langLevel}&inputText=${inputText}`)
+          .then((response) => response.text())
+          .then((responseText) => {
+            const outputParagraph = document.getElementById("outputParagraph");
+            console.log(`Response text: ${responseText}`);
+            outputParagraph.innerText = responseText;
             
-      //       document.body.appendChild(limerickInput);
-      //       document.body.appendChild(responseBody);
-      //     });
-      // });
+            document.body.appendChild(outputParagraph);
+          })
+          .catch((error) => {
+            console.error('Fetch error:', error);
+          });
+      });
     </script>
   </body>
 </html>
