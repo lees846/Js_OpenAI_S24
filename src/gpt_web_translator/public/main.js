@@ -4,6 +4,37 @@ const langLevelElement = document.getElementById("langLevel");
 const inputTextElement = document.getElementById("inputText");
 const translateButton = document.getElementById("translate");
 const suggestButton = document.getElementById("textSuggestion");
+// Some topics generated with ChatGPT
+const topicsDeck = [
+  "an office",
+  "a basic science concept",
+  "a forest scene",
+  "grocery store shelf",
+  "a beach scene",
+  "a farmer's market",
+  "a city park",
+  "a classroom environment",
+  "a coffee shop",
+  "a home kitchen",
+  "a music concert",
+  "an interaction with a computer",
+  "an interaction with a smartphone",
+  "a winter landscape",
+  "a wedding ceremony",
+  "an art museum",
+  "a gym workout",
+  "a family dinner",
+  "a bakery",
+  "a bank interior",
+  "a flower garden",
+  "a playground",
+  "public transportation",
+  "a restaurant",
+  "a meetup with an old friend",
+  "a doctor's office",
+  "an interaction at a hotel",
+  "a pet store/animal shelter",
+];
 
 translateButton.addEventListener("click", () => {
   // Reference the current values of the input fields and convert to URI components for the url
@@ -28,44 +59,18 @@ translateButton.addEventListener("click", () => {
 });
 
 suggestButton.addEventListener("click", () => {
-  // Topics generated in part with ChatGPT
-  const topicsDeck = [
-    "an office",
-    "a basic science concept",
-    "a forest scene",
-    "grocery store shelf",
-    "a beach scene",
-    "a farmer's market",
-    "a city park",
-    "a classroom environment",
-    "a coffee shop",
-    "a home kitchen",
-    "a music concert",
-    "an interaction with a computer",
-    "an interaction with a smartphone",
-    "a winter landscape",
-    "a wedding ceremony",
-    "an art museum",
-    "a gym workout",
-    "a family dinner",
-    "a bakery",
-    "a bank interior",
-    "a flower garden",
-    "a playground",
-    "public transportation",
-    "a restaurant",
-    "a meetup with an old friend",
-    "a doctor's office",
-    "an interaction at a hotel",
-    "a pet store/animal shelter",
-  ];
-
-  // Select a random topic from the deck
+  const langLevel = encodeURIComponent(
+    langLevelElement[langLevelElement.selectedIndex].firstChild.data,
+  );
+  // Select a random topic from topicsDeck
   const randomIndex = Math.round(Math.random() * topicsDeck.length);
 
-  // Send random topic to backend
+  // TODO: Clear/change the text currently in box before re-generating ("..."?)
+  // Send random topic to backend with language level
   fetch(
-    `/api/gpt/suggest?randomTopic=${topicsDeck[randomIndex]}`,
+    `/api/gpt/suggest?randomTopic=${
+      topicsDeck[randomIndex]
+    }&langLevel=${langLevel}`,
   )
     .then((response) => response.text())
     .then((inputSuggestion) => {

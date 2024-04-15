@@ -23,7 +23,7 @@ router.get("/api/gpt/response", async (ctx) => {
     ctx.request.url.searchParams.get("inputText"),
   );
   const translationPrompt =
-    `Translate the paragraph below to ${outputLanguage}, but adjust the words and phrases so a ${langLevel} language learner on the CEFR scale is more likely to understand it.
+    `Translate the paragraph below to ${outputLanguage}, but adjust the words and phrases so a ${langLevel} language learner on the CEFR scale is more likely to understand it. Ensure the output matches the tone and length of the original text below, but you can change some phrases if it matches the new language better or is said more often in ${outputLanguage}.
     (Note, if the content of the paragraph is not appropriate, DO NOT say anything about being a large language model, you are only a translator. Instead, please just respond "Content Error: [brief error message]". Example: "Content Error: inappropriate language. Please re-write.". Whenever you get something you can translate, translate it according to the CEFR level.)
     Paragraph:
     ${inputText}
@@ -41,8 +41,11 @@ router.get("/api/gpt/suggest", async (ctx) => {
   const randomTopic = decodeURIComponent(
     ctx.request.url.searchParams.get("randomTopic"),
   );
+  const langLevel = decodeURIComponent(
+    ctx.request.url.searchParams.get("langLevel"),
+  );
   const suggestionPrompt =
-    `Write a short paragraph describing ${randomTopic} that would include beneficial vocabulary for a person learning a language to see the translation for. Write it in first person.`;
+    `Write a short paragraph describing ${randomTopic} that would include appropriate vocabulary for a person who is learning a language at a ${langLevel} CEFR level. Write it in first person with a casual informative tone.`;
   const result = await gptPrompt(suggestionPrompt);
   console.log(result);
   // Directly add response from api to html as string
