@@ -42,7 +42,7 @@ main {
     flex-wrap: wrap;
 }
 
-form {
+#inputForm {
     border-style: solid;
     border-color: white;
     border-width: 1px;
@@ -116,6 +116,10 @@ section#textOutput label {
 
 p {
     font-size: medium;
+}
+
+p#outputParagraph {
+    padding: 10px;
 }
 
 footer p {

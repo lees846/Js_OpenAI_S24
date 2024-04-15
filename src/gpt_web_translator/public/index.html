@@ -35,7 +35,7 @@
         </p>
       </aside>
       <!-- TODO: don't use form? Disable page refresh in form [action attribute -> url that it should be posted to] -->
-      <form autocomplete="on">
+      <section id="inputForm" autocomplete="on">
         <label for="outputLanguage">Type a language to translate to:</label>
         <input id="outputLanguage" type="text" placeholder="any language" />
         <label for="langLevel">What is your CEFR language learning level?</label>
@@ -49,7 +49,7 @@
         </select>
         <label for="inputText">Text to translate:</label>
         <textarea id="inputText" placeholder="Esse quia molestiae consectetur et accusantium explicabo id. Illo deserunt nihil facilis modi. At sapiente aliquam quos. Dolore iste eum alias cumque nisi aliquam dolorum beatae. Ea nulla eos ad quis ratione quasi unde. Quasi voluptas in quia veritatis."></textarea>
-      </form>
+      </section>
       <button id="translate">Translate!</button>
       <section id="textOutput">
         <label for="outputParagraph">Translated Text:</label>
@@ -82,8 +82,6 @@
             const outputParagraph = document.getElementById("outputParagraph");
             console.log(`Response text: ${responseText}`);
             outputParagraph.innerText = responseText;
-            
-            document.body.appendChild(outputParagraph);
           })
           .catch((error) => {
             console.error('Fetch error:', error);
