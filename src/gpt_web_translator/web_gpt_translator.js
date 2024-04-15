@@ -9,7 +9,7 @@ const app = new Application();
 const router = new Router();
 
 // API routes
-router.get("/api/gpt", async (ctx) => {
+router.get("/api/gpt/response", async (ctx) => {
   // When html script accesses this url, the prompt
   // is sent to the api with fetch through here
   // Also decode URI encoding -> plain text for gpt
@@ -29,6 +29,21 @@ router.get("/api/gpt", async (ctx) => {
     ${inputText}
     `;
   const result = await gptPrompt(translationPrompt);
+  console.log(result);
+  // Directly add response from api to html as string
+  ctx.response.body = result;
+});
+
+router.get("/api/gpt/suggest", async (ctx) => {
+  // When html script accesses this url, the prompt
+  // is sent to the api with fetch through here
+  // Also decode URI encoding -> plain text for gpt
+  const randomTopic = decodeURIComponent(
+    ctx.request.url.searchParams.get("randomTopic"),
+  );
+  const suggestionPrompt =
+    `Write a short paragraph describing ${randomTopic} that would include beneficial vocabulary for a person learning a language to see the translation for. Write it in first person.`;
+  const result = await gptPrompt(suggestionPrompt);
   console.log(result);
   // Directly add response from api to html as string
   ctx.response.body = result;

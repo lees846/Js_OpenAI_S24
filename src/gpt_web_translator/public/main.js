@@ -14,7 +14,7 @@ translateButton.addEventListener("click", () => {
   const inputText = encodeURIComponent(inputTextElement.value);
 
   fetch(
-    `/api/gpt?outputLanguage=${outputLanguage}&langLevel=${langLevel}&inputText=${inputText}`,
+    `/api/gpt/response?outputLanguage=${outputLanguage}&langLevel=${langLevel}&inputText=${inputText}`,
   )
     .then((response) => response.text())
     .then((responseText) => {
@@ -64,16 +64,15 @@ suggestButton.addEventListener("click", () => {
   const randomIndex = Math.round(Math.random() * topicsDeck.length);
 
   // Send random topic to backend
-  //   fetch(
-  //     `/api/gpt?randomTopic=${topicsDeck[randomIndex]}`,
-  //   )
-  //     .then((response) => response.text())
-  //     .then((responseText) => {
-  //       const outputParagraph = document.getElementById("outputParagraph");
-  //       console.log(`Response text: ${responseText}`);
-  //       outputParagraph.innerText = responseText;
-  //     })
-  //     .catch((error) => {
-  //       console.error("Fetch error:", error);
-  //     });
+  fetch(
+    `/api/gpt/suggest?randomTopic=${topicsDeck[randomIndex]}`,
+  )
+    .then((response) => response.text())
+    .then((inputSuggestion) => {
+      console.log(`Input text: ${inputSuggestion}`);
+      inputTextElement.innerText = inputSuggestion;
+    })
+    .catch((error) => {
+      console.error("Fetch error:", error);
+    });
 });
