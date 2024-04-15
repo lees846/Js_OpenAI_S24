@@ -4,6 +4,8 @@ const langLevelElement = document.getElementById("langLevel");
 const inputTextElement = document.getElementById("inputText");
 const translateButton = document.getElementById("translate");
 const suggestButton = document.getElementById("textSuggestion");
+const outputModeToggle = document.getElementById("outputModeToggle");
+
 // Some topics generated with ChatGPT
 const topicsDeck = [
   "an office",
@@ -80,4 +82,12 @@ suggestButton.addEventListener("click", () => {
     .catch((error) => {
       console.error("Fetch error:", error);
     });
+});
+
+// TODO: inquiry mode
+// Referenced https://stackoverflow.com/questions/14544104/checkbox-check-event-listener for correct listener
+outputModeToggle.addEventListener("change", () => {
+  if (outputModeToggle.checked) {
+    console.log("You're going to learn so many THINGS!");
+  }
 });
