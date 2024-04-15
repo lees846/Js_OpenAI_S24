@@ -11,7 +11,7 @@ const chatParamsDefaults: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
   messages: [],
   frequency_penalty: 0,
   logit_bias: {},
-  max_tokens: 128,
+  max_tokens: 400,
   n: 1,
   presence_penalty: 0,
   response_format: { type: "text" },
