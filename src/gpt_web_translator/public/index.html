@@ -34,6 +34,7 @@
           It's as easy as three simple steps! Custom Translate uses the power of AI to recognize and translate your specific dialect, so you don't need to specify the starting language.
         </p>
       </aside>
+      <!-- TODO: don't use form? Disable page refresh in form [action attribute -> url that it should be posted to] -->
       <form autocomplete="on">
         <label for="outputLanguage">Type a language to translate to:</label>
         <input id="outputLanguage" type="text" placeholder="any language" />
@@ -48,9 +49,8 @@
         </select>
         <label for="inputText">Text to translate:</label>
         <textarea id="inputText" placeholder="Esse quia molestiae consectetur et accusantium explicabo id. Illo deserunt nihil facilis modi. At sapiente aliquam quos. Dolore iste eum alias cumque nisi aliquam dolorum beatae. Ea nulla eos ad quis ratione quasi unde. Quasi voluptas in quia veritatis."></textarea>
-
-        <button id="translate">Translate!</button>
       </form>
+      <button id="translate">Translate!</button>
       <section id="textOutput">
         <label for="outputParagraph">Translated Text:</label>
         <p id="outputParagraph"></p>
@@ -74,7 +74,9 @@
         const outputLanguage = encodeURIComponent(outputLanguageElement.value);
         const inputText = encodeURIComponent(inputTextElement.value);
 
-        fetch(`/api/gpt?outputLanguage=${outputLanguage}&langLevel=${langLevel}&inputText=${inputText}`)
+        fetch(`/api/gpt?outputLanguage=${outputLanguage}&langLevel=${langLevel}&inputText=${inputText}`, 
+              // {method: "POST"}
+              )
           .then((response) => response.text())
           .then((responseText) => {
             const outputParagraph = document.getElementById("outputParagraph");
